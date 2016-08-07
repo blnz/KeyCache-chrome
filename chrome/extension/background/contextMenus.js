@@ -1,5 +1,5 @@
 let windowId = 0;
-const CONTEXT_MENU_ID = 'example_context_menu';
+const CONTEXT_MENU_ID = 'KeyCache_context_menu';
 
 function closeIfExist() {
   if (windowId > 0) {
@@ -23,12 +23,13 @@ function popWindow(type) {
   }
 }
 
+// FIXME: we wanna do this after we determine the page has an interesting form
 chrome.contextMenus.create({
   id: CONTEXT_MENU_ID,
-  title: 'React Chrome Extension Example',
+  title: 'KeyCache',
   contexts: ['all'],
   documentUrlPatterns: [
-    'https://github.com/*'
+    'https://*/*'
   ]
 });
 

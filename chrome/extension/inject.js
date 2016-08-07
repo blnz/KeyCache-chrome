@@ -16,7 +16,7 @@ class InjectApp extends Component {
     return (
       <div>
         <button onClick={this.buttonOnClick}>
-          Open TodoApp
+          KeyCache
         </button>
         <Dock
           position="right"
@@ -41,7 +41,7 @@ class InjectApp extends Component {
 
 window.addEventListener('load', () => {
   const injectDOM = document.createElement('div');
-  injectDOM.className = 'inject-react-example';
+  injectDOM.className = 'inject-keycache';
   injectDOM.style.textAlign = 'center';
   document.body.appendChild(injectDOM);
   render(<InjectApp />, injectDOM);
