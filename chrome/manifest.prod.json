@@ -19,6 +19,11 @@
   "background": {
     "page": "background.html"
   },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["js/content.bundle.js"]
+  }],
+
   "permissions": [ "contextMenus", "tabs", "storage", "https://github.com/*" ],
   "content_security_policy": "default-src 'self'; script-src 'self'; style-src * 'unsafe-inline'; img-src 'self' data:;"
 }
