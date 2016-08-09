@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import TodoItem from './TodoItem';
+import TodoTextInput from './TodoTextInput';
 import Footer from './Footer';
 import { SHOW_ALL, SHOW_COMPLETED, SHOW_ACTIVE } from '../constants/TodoFilters';
 import style from './MainSection.css';
@@ -11,6 +12,13 @@ const TODO_FILTERS = {
 };
 
 export default class MainSection extends Component {
+
+  handleSave = text => {
+    if (text.length !== 0) {
+      this.props.actions.addTodo(text);
+    }
+  };
+
 
   static propTypes = {
     todos: PropTypes.array.isRequired,
@@ -35,7 +43,7 @@ export default class MainSection extends Component {
 
   renderToggleAll(completedCount) {
     const { todos, actions } = this.props;
-    if (todos.length > 0) {
+    if ( todos.length > 0) {
       return (
         <input
           className={style.toggleAll}
@@ -77,6 +85,12 @@ export default class MainSection extends Component {
 
     return (
       <section className={style.main}>
+        <TodoTextInput
+          newTodo
+          onSave={this.handleSave}
+          placeholder="What do you want done?"
+        />
+
         {this.renderToggleAll(completedCount)}
         <ul className={style.todoList}>
           {filteredTodos.map(todo =>

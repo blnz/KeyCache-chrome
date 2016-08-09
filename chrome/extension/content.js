@@ -1,5 +1,12 @@
 console.log("loading content.js");
 
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+import Dock from 'react-dock';
+import InjectApp from './inject';
+
+console.log("InjectApp is:", InjectApp);
+
 function getLoginForm(){
   var forms = document.getElementsByTagName('form');
 
@@ -259,6 +266,11 @@ var VISIBILITY = (function(){
 var lf = getLoginForm();
 if (lf) {
   console.log("found a login form");
+   const injectDOM = document.createElement('div');
+   injectDOM.className = 'inject-keycache';
+   injectDOM.style.textAlign = 'center';
+   document.body.appendChild(injectDOM);
+   render(<InjectApp />, injectDOM);
 } else {
   console.log("no login form");
 }

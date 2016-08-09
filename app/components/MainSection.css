@@ -109,7 +109,7 @@
 }
 
 .toggleAll {
-  position: absolute;
+  /* position: absolute; */
   top: -55px;
   left: -12px;
   width: 60px;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Dock from 'react-dock';
 
-class InjectApp extends Component {
+export default class InjectApp extends Component {
   constructor(props) {
     super(props);
     this.state = { isVisible: false };
@@ -39,10 +39,10 @@ class InjectApp extends Component {
   }
 }
 
-window.addEventListener('load', () => {
-  const injectDOM = document.createElement('div');
-  injectDOM.className = 'inject-keycache';
-  injectDOM.style.textAlign = 'center';
-  document.body.appendChild(injectDOM);
-  render(<InjectApp />, injectDOM);
-});
+// window.addEventListener('load', () => {
+//   const injectDOM = document.createElement('div');
+//   injectDOM.className = 'inject-keycache';
+//   injectDOM.style.textAlign = 'center';
+//   document.body.appendChild(injectDOM);
+//   render(<InjectApp />, injectDOM);
+// });

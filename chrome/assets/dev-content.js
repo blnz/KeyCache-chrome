@@ -1,4 +1,4 @@
-// Injector file for webpack 'content.bundle.js'
+// Injector file for webpack hot loading 'content.bundle.js'
 var context = this;
 
 // http://stackoverflow.com/questions/8403108/calling-eval-in-particular-context/25859853#25859853

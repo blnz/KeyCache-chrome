@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
+import CardsList from '../components/CardsList';
 import MainSection from '../components/MainSection';
 import * as TodoActions from '../actions/todos';
 import style from './App.css';
@@ -14,6 +15,7 @@ import style from './App.css';
     actions: bindActionCreators(TodoActions, dispatch)
   })
 )
+
 export default class App extends Component {
 
   static propTypes = {
@@ -26,8 +28,9 @@ export default class App extends Component {
 
     return (
       <div className={style.normal}>
-        <Header addTodo={actions.addTodo} />
-        <MainSection todos={todos} actions={actions} />
+        <Header />
+
+        <MainSection todos={todos} actions={actions} addTodo={actions.addTodo} />
       </div>
     );
   }

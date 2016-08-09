@@ -21,7 +21,7 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["js/content.bundle.js"]
+    "js": ["dev-content.js"]
   }],
 
   "permissions": [ "contextMenus", "tabs", "storage", "https://github.com/*" ],
