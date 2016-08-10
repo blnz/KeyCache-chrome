@@ -23,7 +23,7 @@ function popWindow(type) {
   }
 }
 
-// FIXME: we wanna do this after we determine the page has an interesting form
+// FIXME: we might wanna do this only after we determine the page has an interesting form
 chrome.contextMenus.create({
   id: CONTEXT_MENU_ID,
   title: 'KeyCache',

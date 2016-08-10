@@ -1,5 +1,6 @@
 // show a count
 chrome.storage.local.get('updates', (obj) => {
+  console.log("running badge");
   let updates = obj.updates;
   if (updates) {
     updates = JSON.parse(updates);
