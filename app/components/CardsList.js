@@ -37,7 +37,7 @@ export default class CardsList extends Component {
                 if (card.clear && card.clear.name) {
                     return (
                         <ListItem primaryText={card.clear.name}
-                        key={card.clear.id}/>
+                        key={card.id}/>
                     );
                 }
             } ) }

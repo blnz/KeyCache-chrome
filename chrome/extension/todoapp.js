@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from '../../app/containers/Root';
-import './todoapp.css';
-
-// here's where we get the persisted state from local storage
+import createStore from '../../app/store/configureStore';
+import { loadState, saveState }  from '../../app/utils/localStorage';
 
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -12,21 +11,19 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 //Can go away when react 1.0 release
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
+
 injectTapEventPlugin();
 
+const persisted = loadState();
 
-chrome.storage.local.get('state', obj => {
-  const { state } = obj;
+const store = createStore(persisted);
 
-  console.log("obj", obj, "state", state);
-  
-  const initialState = JSON.parse(state || '{}');
-
-  const createStore = require('../../app/store/configureStore');
-  const store = createStore(initialState);
-  
-  ReactDOM.render(
-    <Root store={ store } />,
-    document.querySelector('#root')
-  );
+store.subscribe(() => {
+  console.log("persisting state to localStorage");
+  saveState(store.getState());
 });
+
+ReactDOM.render(
+    <Root store={ store } />,
+  document.querySelector('#root')
+);

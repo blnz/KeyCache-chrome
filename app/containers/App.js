@@ -72,13 +72,6 @@ export default class App extends Component {
     console.log("props:", this.props)
     const { todos, cards, actions } = this.props;
 
-    // return (
-    //   <div className={style.normal}>
-    //     <Header />
-    //     <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
-    //     <MainSection todos={todos} actions={actions} addTodo={actions.addTodo} />
-    //   </div>
-    // );
     return (
         <div>
 	<MuiThemeProvider muiTheme={muiTheme} >
@@ -89,7 +82,7 @@ export default class App extends Component {
       iconElementRight={ mainMenu } />
         <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
         
-      { /*<MainSection todos={todos} actions={actions} addTodo={actions.addTodo} /> */ }
+        { /*<MainSection todos={todos} actions={actions} addTodo={actions.addTodo} /> */ }
       </div>
         </MuiThemeProvider>
 	</div>
