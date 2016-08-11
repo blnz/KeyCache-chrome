@@ -17,8 +17,7 @@ const actionsMap = {
   [ActionTypes.ADD_CARD](state, action) {
     return [{
       id: state.reduce((maxId, card) => Math.max(card.id, maxId), -1) + 1,
-      completed: false,
-      text: action.text
+      clear: action.cardData
     }, ...state];
   },
 
@@ -31,7 +30,7 @@ const actionsMap = {
   [ActionTypes.EDIT_CARD](state, action) {
     return state.map(card =>
       (card.id === action.id ?
-        Object.assign({}, card, { text: action.text }) :
+        Object.assign({}, card, { text: action.cardData }) :
         card)
     );
   },
