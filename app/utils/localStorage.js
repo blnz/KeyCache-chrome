@@ -12,15 +12,28 @@ export const loadState = () => {
   }
 };
 
+const encryptedCards = (cards) => {
+  // for now, we leave it, later, we'll trim off the "clear" portion
+  return (
+    cards.map( (card) => { return card; } )
+  );
+}
+
+// WebCrypto
+//    var sample = new Uint8Array(100);
+//    crypto.getRandomValues(sample);
+//    console.log("sample", sample);
+
+
 export const saveState = (state) => {
   try {
-    const serializedState = JSON.stringify(state);
-    console.log("saving serialized:", serializedState);
+    // console.log("going to save state", state);
+    const cards = encryptedCards(state.cards)
+    const savable = { user: state.user, cards }
+    const serializedState = JSON.stringify(savable);
+    // console.log("saving serialized:", serializedState);
     localStorage.setItem('state', serializedState);
-    var sample = new Uint8Array(100);
-    crypto.getRandomValues(sample);
-    console.log("sample", sample);
-    console.log("getting it back from local storage yeilds", localStorage['state']);
+    // console.log("getting it back from local storage yeilds", localStorage['state']);
   } catch (err) {
     console.log("failed to stringify state");
   }

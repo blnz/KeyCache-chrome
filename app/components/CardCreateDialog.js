@@ -17,16 +17,16 @@ const styles = {
  * Dialog for creating a new card
  */
 export default class CardCreateDialog extends React.Component {
-  
+
   static propTypes = {
     onSave:  PropTypes.func.isRequired,
   };
-  
+
   state = {
     open: false,
     card: {}
   };
-  
+
   handleOpen = () => {
     this.setState({open: true,
                    card: {}});
@@ -43,7 +43,7 @@ export default class CardCreateDialog extends React.Component {
   };
 
   render() {
-   
+
     const actions = [
       <FlatButton
         label="Cancel"
@@ -67,63 +67,61 @@ export default class CardCreateDialog extends React.Component {
     };
 
     return (
-        <div>
-        <FloatingActionButton  style={ fabStyle } onTouchTap={this.handleOpen.bind(this)}>
-          <ContentAdd />
-        </FloatingActionButton>
+      <div>
+      <FloatingActionButton  style={ fabStyle } onTouchTap={this.handleOpen.bind(this)}>
+      <ContentAdd />
+      </FloatingActionButton>
 
-        <Dialog
-          title="New Card"
-          actions={actions}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-        >
-            <TextField
+      <Dialog
+      title="New Card"
+      actions={actions}
+      modal={false}
+      open={this.state.open}
+      onRequestClose={this.handleClose}
+      autoScrollBodyContent={true}
+      >
+      <TextField
       hintText="Card name"
       floatingLabelText="Name"
-      
+
       onChange={ e => {var card = Object.assign({}, this.state.card, {name: e.target.value});
-                       this.setState({card});} }
+      this.setState({card});} }
       id="name"
-    /><br />
-            <TextField
+      /><br />
+      <TextField
       hintText="www.example.com"
       floatingLabelText="URL"
       onChange={ e => {var card = Object.assign({}, this.state.card, {url: e.target.value});
-                       this.setState({card});} }
+      this.setState({card});} }
       id="url"
-    /><br />
-            <TextField
+      /><br />
+      <TextField
       hintText="jane@example.com"
       floatingLabelText="Username"
       onChange={ e => {var card = Object.assign({}, this.state.card, {username: e.target.value});
-                       this.setState({card});} }
+      this.setState({card});} }
       id="username"
-    /><br />
-            <TextField
+      /><br />
+      <TextField
       hintText="Password Field"
       floatingLabelText="Password"
       type="password"
       onChange={ e => {var card = Object.assign({}, this.state.card, {password: e.target.value});
-                       this.setState({card});} }
+      this.setState({card});} }
       id="password"
-    /><br />
-    <TextField
+      /><br />
+      <TextField
       hintText="MultiLine with rows: 2 and rowsMax: 4"
       multiLine={true}
       floatingLabelText="Notes"
       onChange={ e => {var card = Object.assign({}, this.state.card, {note: e.target.value});
-                       this.setState({card});} }
+      this.setState({card});} }
       id="note"
       rows={2}
       rowsMax={4}
-    />
-        </Dialog>
+      />
+      </Dialog>
       </div>
     );
   }
 }
-
-

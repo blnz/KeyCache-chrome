@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Header from '../components/Header';
 import CardsList from '../components/CardsList';
 import MainSection from '../components/MainSection';
+import Registration from '../components/Registration';
 
 import * as TodoActions from '../actions/todos';
 
@@ -37,7 +38,8 @@ const muiTheme = getMuiTheme({
 @connect(
   state => ({
     todos: state.todos,
-    cards: state.cards
+    cards: state.cards,
+    user: state.user
   }),
   dispatch => ({
     actions: bindActionCreators(TodoActions, dispatch)
@@ -49,9 +51,15 @@ export default class App extends Component {
   static propTypes = {
     todos: PropTypes.array.isRequired,
     cards: PropTypes.array.isRequired,
+    user: PropTypes.object.isRequired,
     actions: PropTypes.object.isRequired
   };
 
+  handleRegister = userData => {
+    console.log("app register:", userData);
+    this.props.actions.registerUser(userData);
+  }
+  
   render() {
 
     var mainMenu = 
@@ -70,22 +78,45 @@ export default class App extends Component {
       );
 
     console.log("props:", this.props)
-    const { todos, cards, actions } = this.props;
+    const { todos, user, cards, actions } = this.props;
 
-    return (
-        <div>
-	<MuiThemeProvider muiTheme={muiTheme} >
-        <div style={styles.container}>
-        <AppBar
-      title="KeyCache"
-      iconElementLeft={ <span /> }
-      iconElementRight={ mainMenu } />
-        <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
-        
+    if (user.clearkey) {
+    
+      return (
+          <div>
+	  <MuiThemeProvider muiTheme={muiTheme} >
+          <div style={styles.container}>
+          <AppBar
+        title="KeyCache"
+        iconElementLeft={ <span /> }
+        iconElementRight={ mainMenu } />
+          <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
+          
         { /*<MainSection todos={todos} actions={actions} addTodo={actions.addTodo} /> */ }
-      </div>
-        </MuiThemeProvider>
-	</div>
-    ); 
+        </div>
+          </MuiThemeProvider>
+	  </div>
+      );
+    } else if (user.masterkey) {
+      return (
+          <div> need you to sign in </div>
+      );
+    } else {
+      return (
+          <div>
+	  <MuiThemeProvider muiTheme={muiTheme} >
+          <div style={styles.container}>
+          <AppBar
+        title="KeyCache"
+        iconElementLeft={ <span /> }
+        iconElementRight={ mainMenu } />
+
+          <div>Register, please</div>
+          <Registration onSave={this.handleRegister} onTestThunk={this.props.actions.makeSandwichesForEverybody}/>
+          </div>
+          </MuiThemeProvider>
+          </div>
+      );
+    }
   }
 }

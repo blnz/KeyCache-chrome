@@ -1,4 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import { hashPassword } from '../utils/kcCrypto';
 
 const initialState = {
 
@@ -7,7 +8,12 @@ const initialState = {
 const actionsMap = {
 
   [ActionTypes.SET_MASTERKEY](state, action) {
-    return Object.merge({}, { masterkey: action.masterkey }, state);
+    return Object.assign({}, { masterkey: action.masterkey }, state);
+  },
+
+  [ActionTypes.REGISTER_USER](state, action) {
+    console.log("registerUser reducer");
+    return Object.assign({}, { user: action.userData }, state);
   }
 };
 
