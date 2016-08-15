@@ -1,26 +1,10 @@
 const bluebird = require('bluebird');
-
-
-function arrayBufferToHexString(arrayBuffer) {
-  var byteArray = new Uint8Array(arrayBuffer);
-  var hexString = "";
-  var nextHexByte;
-
-  for (var i=0; i<byteArray.byteLength; i++) {
-    nextHexByte = byteArray[i].toString(16);
-    if (nextHexByte.length < 2) {
-      nextHexByte = "0" + nextHexByte;
-    }
-    hexString += nextHexByte;
-  }
-  return hexString;
-}
+import {toByteArray, fromByteArray} from 'base64-js'
 
 function stringToArrayBuffer(string) {
   var encoder = new TextEncoder("utf-8");
   return encoder.encode(string);
 }
-
 
 export function wrappedKey(password, wrappable) {
   const salt = 'yabba'
@@ -62,7 +46,7 @@ export function wrappedKey(password, wrappable) {
         //returns an ArrayBuffer containing the encrypted data
         console.log("wrapped", wrapped)
         console.log("asArray", new Uint8Array(wrapped));
-        resolve({ wrapped: new Uint8Array(wrapped), iv: iv})
+        resolve({ wrapped: fromByteArray(new Uint8Array(wrapped)), iv: iv})
       }).
       catch(function(err) {
         console.log("Key derivation failed: " + err.message);
@@ -104,7 +88,7 @@ export function wrappedKey(password, wrappable) {
           console.log("we have our derived wrappingKey", derivedWrappingKey)
           return window.crypto.subtle.unwrapKey(
             "jwk", //"jwk", "raw", "spki", or "pkcs8" (whatever was used in wrapping)
-            wrapped, //the key you want to unwrap
+            toByteArray(wrapped), //the key you want to unwrap
             derivedWrappingKey, //the AES-CBC key with "unwrapKey" usage flag
             {   //these are the wrapping key's algorithm options
             name: "AES-CBC",
@@ -129,7 +113,6 @@ export function wrappedKey(password, wrappable) {
       })
     })
   }
-
 
   export function kcEncrypt(key, data) {
     const iv = window.crypto.getRandomValues(new Uint8Array(16))
@@ -164,10 +147,7 @@ export function wrappedKey(password, wrappable) {
     .then (function(decrypted) {
       console.log("we've decrypted to:", new Uint8Array(decrypted));
       return decrypted
-
     })
-
-
   }
 
   // unit test ... creates a new symmetric key,
