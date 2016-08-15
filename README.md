@@ -31,7 +31,7 @@ $ npm run dev
 
 #### React/Redux hot reload
 
-This boilerplate uses `Webpack` and `react-transform`, and use `Redux`. You can hot reload by editing related files of Popup & Window & Inject page.
+This extension uses `Webpack` and `react-transform`, and use `Redux`. You can hot reload by editing related files of Popup & Window & Inject page.
 
 #### Using Redux DevTools Extension
 
