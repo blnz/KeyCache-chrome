@@ -2,6 +2,7 @@ export const ADD_CARD = 'ADD_CARD';
 export const DELETE_CARD = 'DELETE_CARD';
 export const EDIT_CARD = 'EDIT_CARD';
 
+export const DELETE_ALL = 'DELETE_ALL';
 export const REGISTER_USER = 'REGISTER_USER';
 export const SET_CLEAR_MASTERKEY = 'SET_CLEAR_MASTERKEY';
 

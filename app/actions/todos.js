@@ -40,7 +40,12 @@ export function registerUserData(userData) {
 }
 
 export function setClearMasterKey(masterKey) {
-  return { type: types.SET_CLEAR_MASTERKEY, msterKey };
+  return { type: types.SET_CLEAR_MASTERKEY, masterKey };
+}
+
+// wipes out all data!
+export function deleteAll() {
+  return { type: types.DELETE_ALL };
 }
 
 export function addTodo(text) {

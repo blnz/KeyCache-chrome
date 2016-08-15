@@ -22,6 +22,10 @@ const actionsMap = {
     }, ...state];
   },
 
+  [ActionTypes.DELETE_ALL](state, action) {
+    return [];
+  },
+
   [ActionTypes.DELETE_CARD](state, action) {
     return state.filter(card =>
       card.id !== action.id

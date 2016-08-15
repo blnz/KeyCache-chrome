@@ -59,10 +59,14 @@ export default class App extends Component {
     console.log("app register:", userData);
     this.props.actions.registerUser(userData);
   }
-  
+
+  handleWipe = event => {
+    this.props.actions.deleteAll()
+
+  }
   render() {
 
-    var mainMenu = 
+    var mainMenu =
       (
 	  <IconMenu
 	iconButtonElement={
@@ -71,7 +75,7 @@ export default class App extends Component {
 	targetOrigin={{horizontal: 'right', vertical: 'top'}}
 	anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 	  >
-          <MenuItem primaryText="Check for new" onTouchTap={(e) => {console.log("We should Refresh"); } }/>
+          <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
 
           <MenuItem primaryText="logout" onTouchTap={(e) => { console.log("forgetting password")} }/>
 	  </IconMenu>
@@ -81,7 +85,7 @@ export default class App extends Component {
     const { todos, user, cards, actions } = this.props;
 
     if (user.clearkey) {
-    
+
       return (
           <div>
 	  <MuiThemeProvider muiTheme={muiTheme} >
@@ -91,7 +95,7 @@ export default class App extends Component {
         iconElementLeft={ <span /> }
         iconElementRight={ mainMenu } />
           <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
-          
+
         { /*<MainSection todos={todos} actions={actions} addTodo={actions.addTodo} /> */ }
         </div>
           </MuiThemeProvider>
