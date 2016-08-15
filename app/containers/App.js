@@ -6,7 +6,7 @@ import CardsList from '../components/CardsList';
 import MainSection from '../components/MainSection';
 import Registration from '../components/Registration';
 
-import * as TodoActions from '../actions/todos';
+import * as CardActions from '../actions/cards';
 
 import {deepOrange500} from 'material-ui/styles/colors';
 
@@ -19,7 +19,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
-
 
 const styles = {
   container: {
@@ -42,7 +41,7 @@ const muiTheme = getMuiTheme({
     user: state.user
   }),
   dispatch => ({
-    actions: bindActionCreators(TodoActions, dispatch)
+    actions: bindActionCreators(CardActions, dispatch)
   })
 )
 
@@ -76,7 +75,6 @@ export default class App extends Component {
 	anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 	  >
           <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
-
           <MenuItem primaryText="logout" onTouchTap={(e) => { console.log("forgetting password")} }/>
 	  </IconMenu>
       );

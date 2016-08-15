@@ -1,5 +1,6 @@
 const bluebird = require('bluebird');
 global.Promise = bluebird;
+
 import * as types from '../constants/ActionTypes';
 import { testKeyWrapper, wrappedKey, testWrapping } from '../utils/kcCrypto';
 
@@ -9,33 +10,38 @@ export function addCard(cardData) {
 
 export function registerUser(userData) {
   return function (dispatch) {
-    console.log("generateAESKey got dispatch");
+    console.log("registerUser got dispatch");
+
+    // a new, random masterkey
     var keyPromise = window.crypto.subtle.generateKey(
       {name: "AES-CBC", length: 256}, // Algorithm the key will be used with
       true,                           // Can extract key value to binary string
       ["encrypt", "decrypt"]          // Use for these operations
     );
-    //This will try to create a new, random key, and pass it to the promise’s then method. We will just save it for now:
-
+    
     keyPromise.then(function(key) {
-      console.log("got AES-KEY:", key)
-      dispatch(registerUserData(userData));
-      return key;
-    }).then(function(something) {
-      console.log("proceeding", something)
-//return wrappedKey('foobar', something);
-      return testWrapping('foobar')
-    }).then (function(more){
-      console.log("got more", more)
-    })
+        console.log("got a new AES-KEY:", key)
+        // dispatch(registerUserData(userData));
+        return key;
+      }).then(function(masterKey) {
+        console.log("proceeding with masterKey:", masterKey)
+        dispatch(setClearMasterKey(masterKey))
+        return wrappedKey(userData.passphrase, masterKey)
+      }).then (function(wrapped) {
+        console.log("got wrapped and serialized masterkey", wrapped)
+        return  dispatch(registerUserData(Object.assign({}, userData, { wrapped })))
+      }).then( () => {
+        console.log("we've dispatched userData")
+      }).catch( err => {
+        console.log("caught:", err)
+      })
+    
     keyPromise.catch(function(err) {console.log("Something went wrong: " + err.message);});
-
   };
-
-  return { type: types.REGISTER_USER, userData };
 }
 
 export function registerUserData(userData) {
+  console.log("registerUSerData with:", userData)
   return { type: types.REGISTER_USER, userData };
 }
 
@@ -71,8 +77,6 @@ export function completeAll() {
 export function clearCompleted() {
   return { type: types.CLEAR_COMPLETED };
 }
-
-
 
 export function fetchSecretSauce() {
   return fetch('https://localhost:3000/js/inject.bundle.js');

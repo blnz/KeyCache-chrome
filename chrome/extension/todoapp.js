@@ -19,7 +19,7 @@ const persisted = loadState();
 const store = createStore(persisted);
 
 store.subscribe(() => {
-  console.log("persisting state to localStorage");
+  console.log("persisting state to localStorage", store.getState());
   saveState(store.getState());
 });
 
