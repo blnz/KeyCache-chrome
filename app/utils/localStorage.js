@@ -13,9 +13,9 @@ export const loadState = () => {
 };
 
 const encryptedCards = (cards) => {
-  // for now, we leave it, later, we'll trim off the "clear" portion
+  // remove the clear data since we only store encrypted 
   return (
-    cards.map( (card) => { return card; } )
+    cards.map( (card) => { return {id: card.id, version: card.version, encrypted: card.encrypted} } )
   );
 }
 

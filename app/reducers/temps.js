@@ -4,7 +4,7 @@ import * as ActionTypes from '../constants/ActionTypes';
 // the user's credentials
 
 const initialState = {
-
+  cards: []
 };
 
 const actionsMap = {
@@ -21,6 +21,19 @@ const actionsMap = {
 
   [ActionTypes.DELETE_ALL](state, action) {
     return {};
+  },
+
+  [ActionTypes.ADD_CARD](state, action) {
+    const { clear, encrypted } = action.cardData
+    const ocards = state.cards || []
+    console.log(action, clear, encrypted)
+ 
+    return Object.assign({}, state, { cards: [{
+      id: 12345,
+      version: 1,
+      clear,
+      encrypted 
+    }, ...ocards ]});
   },
 
   [ActionTypes.REGISTER_USER](state, action) {
