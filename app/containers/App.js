@@ -36,7 +36,6 @@ const muiTheme = getMuiTheme({
 
 @connect(
   state => ({
-    todos: state.todos,
     cards: state.cards,
     temps: state.temps,
     user: state.user
@@ -49,7 +48,6 @@ const muiTheme = getMuiTheme({
 export default class App extends Component {
 
   static propTypes = {
-    todos: PropTypes.array.isRequired,
     cards: PropTypes.array.isRequired,
     user: PropTypes.object.isRequired,
     actions: PropTypes.object.isRequired
@@ -72,27 +70,25 @@ export default class App extends Component {
 
   handleWipe = event => {
     this.props.actions.deleteAll()
-
   }
+
   render() {
+
+    console.log("props:", this.props)
+    const { user, cards, temps, actions } = this.props;
 
     var mainMenu =
       (
-	  <IconMenu
-	iconButtonElement={
-            <IconButton><MoreVertIcon /></IconButton>
-	}
+	  <IconMenu iconButtonElement={
+              <IconButton><MoreVertIcon /></IconButton>
+	  }
 	targetOrigin={{horizontal: 'right', vertical: 'top'}}
 	anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 	  >
           <MenuItem primaryText="Logout" onTouchTap={ this.handleLogout }/>
           <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
-          <MenuItem primaryText="logout" onTouchTap={(e) => { console.log("forgetting password")} }/>
 	  </IconMenu>
       );
-
-    console.log("props:", this.props)
-    const { todos, user, cards, temps, actions } = this.props;
 
     if (temps.masterKey) {
 
