@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import CardsList from '../components/CardsList';
-import MainSection from '../components/MainSection';
 import Registration from '../components/Registration';
 import Authentication from '../components/Authentication';
 
@@ -105,10 +104,8 @@ export default class App extends Component {
         title="KeyCache"
         iconElementLeft={ <span /> }
         iconElementRight={ mainMenu } />
-          <CardsList cards={cards}  actions={actions} addTodo={actions.addTodo} />
-
-        { /*<MainSection todos={todos} actions={actions} addTodo={actions.addTodo} /> */ }
-        </div>
+          <CardsList cards={cards}  actions={actions} />
+          </div>
           </MuiThemeProvider>
 	  </div>
       );

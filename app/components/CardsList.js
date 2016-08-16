@@ -33,7 +33,7 @@ export default class CardsList extends Component {
             <div>
             <List>
             { this.props.cards.map( card => {
-                console.log("got card", card);
+              //                console.log("got card", card);
                 if (card.clear && card.clear.name) {
                     return (
                         <ListItem primaryText={card.clear.name}
