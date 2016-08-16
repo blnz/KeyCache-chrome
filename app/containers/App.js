@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import CardsList from '../components/CardsList';
 import MainSection from '../components/MainSection';
 import Registration from '../components/Registration';
+import Authentication from '../components/Authentication';
 
 import * as CardActions from '../actions/cards';
 
@@ -38,6 +39,7 @@ const muiTheme = getMuiTheme({
   state => ({
     todos: state.todos,
     cards: state.cards,
+    temps: state.temps,
     user: state.user
   }),
   dispatch => ({
@@ -59,6 +61,16 @@ export default class App extends Component {
     this.props.actions.registerUser(userData);
   }
 
+  handleLogin = userData => {
+    console.log("app login:", userData);
+    this.props.actions.authenticateUser(userData);
+  }
+
+  handleLogout = () => {
+    console.log("app logout:");
+    this.props.actions.logoutUser();
+  }
+
   handleWipe = event => {
     this.props.actions.deleteAll()
 
@@ -74,15 +86,16 @@ export default class App extends Component {
 	targetOrigin={{horizontal: 'right', vertical: 'top'}}
 	anchorOrigin={{horizontal: 'right', vertical: 'top'}}
 	  >
+          <MenuItem primaryText="Logout" onTouchTap={ this.handleLogout }/>
           <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
           <MenuItem primaryText="logout" onTouchTap={(e) => { console.log("forgetting password")} }/>
 	  </IconMenu>
       );
 
     console.log("props:", this.props)
-    const { todos, user, cards, actions } = this.props;
+    const { todos, user, cards, temps, actions } = this.props;
 
-    if (user.clearkey) {
+    if (temps.masterKey) {
 
       return (
           <div>
@@ -99,9 +112,23 @@ export default class App extends Component {
           </MuiThemeProvider>
 	  </div>
       );
-    } else if (user.masterkey) {
+    } else if (user.wrappedKey) {
+      // the user has registered previously, but we need to unwrap the masterKey
       return (
-          <div> need you to sign in </div>
+          <div>
+	  <MuiThemeProvider muiTheme={muiTheme} >
+          <div style={styles.container}>
+          <AppBar
+        title="KeyCache"
+        iconElementLeft={ <span /> }
+        iconElementRight={ mainMenu } />
+
+          <div>Please authenticate</div>
+          <Authentication onSave={this.handleLogin} user={user}/>
+          </div>
+          </MuiThemeProvider>
+          </div>
+
       );
     } else {
       return (
@@ -114,7 +141,7 @@ export default class App extends Component {
         iconElementRight={ mainMenu } />
 
           <div>Register, please</div>
-          <Registration onSave={this.handleRegister} onTestThunk={this.props.actions.makeSandwichesForEverybody}/>
+          <Registration onSave={this.handleRegister} />
           </div>
           </MuiThemeProvider>
           </div>

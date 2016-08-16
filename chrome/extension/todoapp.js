@@ -4,6 +4,7 @@ import Root from '../../app/containers/Root';
 import createStore from '../../app/store/configureStore';
 import { loadState, saveState }  from '../../app/utils/localStorage';
 
+window.React = React;
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 

@@ -4,20 +4,18 @@ import { hashPassword } from '../utils/kcCrypto';
 // wherein we store data, both persistable and non about
 // the user's credentials
 
-const initialState = {
-
-};
+const initialState = { }
 
 const actionsMap = {
-
   [ActionTypes.DELETE_ALL](state, action) {
-    return {};
+    return {}
   },
 
   [ActionTypes.REGISTER_USER](state, action) {
-    console.log("registerUser reducer with action:", action);
-    const returnable = Object.assign({}, state, { user: action.userData });
-    console.log("should be mutating to:", returnable)
+    //    console.log("registerUser reducer with action:", action);
+    const {username, wrapped} = action.userData
+    const returnable = Object.assign({}, state, {username,  wrappedKey: wrapped} );
+    // console.log("should be mutating to:", returnable)
     return returnable
   }
 };

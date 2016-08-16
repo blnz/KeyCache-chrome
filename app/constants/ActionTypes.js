@@ -5,6 +5,7 @@ export const EDIT_CARD = 'EDIT_CARD';
 export const DELETE_ALL = 'DELETE_ALL';
 export const REGISTER_USER = 'REGISTER_USER';
 export const SET_CLEAR_MASTERKEY = 'SET_CLEAR_MASTERKEY';
+export const REMOVE_CLEAR_MASTERKEY = 'REMOVE_CLEAR_MASTERKEY';
 
 export const ADD_TODO = 'ADD_TODO';
 export const DELETE_TODO = 'DELETE_TODO';

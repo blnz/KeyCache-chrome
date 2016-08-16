@@ -14,6 +14,11 @@ const actionsMap = {
     return Object.assign({}, state, { masterKey });
   },
 
+  [ActionTypes.REMOVE_CLEAR_MASTERKEY](state, action) {
+    const masterKey = undefined
+    return Object.assign({}, state, { masterKey });
+  },
+
   [ActionTypes.DELETE_ALL](state, action) {
     return {};
   },
