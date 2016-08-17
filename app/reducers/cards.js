@@ -6,9 +6,9 @@ const actionsMap = {
 
   // cards are reflected in localStorage, so we'll strip the clear portion before saving
   [ActionTypes.ADD_CARD](state, action) {
-    const { clear, encrypted } = action.cardData
+    const { clear, encrypted, id } = action.cardData
     return [{
-      id: state.reduce((maxId, card) => Math.max(card.id, maxId), -1) + 1,
+      id,
       version: 0,
       clear,
       encrypted 

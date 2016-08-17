@@ -11,7 +11,7 @@ export default class CardsList extends Component {
         actions: PropTypes.object.isRequired
     };
     
-    handleSave = card => {
+    handleCreate = card => {
         this.props.actions.addCard(card);
     };
 
@@ -28,7 +28,7 @@ export default class CardsList extends Component {
                 }
             } ) }
             </List>
-            <CardCreateDialog onSave={this.handleSave}/> 
+            <CardCreateDialog onSave={this.handleCreate}/> 
             </div>
         );
     }

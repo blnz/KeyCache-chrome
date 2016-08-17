@@ -21,7 +21,10 @@ export function addCard(cardData) {
 
     encryptStringToSerialized(key, clear).then( encrypted => {
       //      console.log("gonna add CardData ", { clear: cardData, encrypted })
-      return dispatch(addCardData({ clear: cardData, encrypted }))
+      return dispatch(addCardData({
+        id: require('node-uuid').v4(),
+        clear: cardData,
+        encrypted }))
     })
   }
 }
