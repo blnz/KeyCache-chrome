@@ -1,10 +1,17 @@
-# KeyCache chrome
+# KeyCache-chrome
 
 > Chrome Extension React.js project for KeyCache.
+
+KeyCache is an open source password manager, using the latest best practices (I hope) in cryptographic security. 
 
 ## Features
 
  - Simple
+ - Secure -- uses AES 256 encryption for all data, with a random key wrapped by a master passphrase. The master passphrase is never stored
+
+## Status
+
+alpha
 
 ## Installation
 
@@ -26,7 +33,7 @@ $ npm install
 $ npm run dev
 ```
 
-* If you're developing Inject page, please allow `https://localhost:3000` connections. (Because `injectpage` injected GitHub (https) pages, so webpack server procotol must be https.) You can allow localhost connections by setting the chrome flag at: `chrome://flags/#allow-insecure-localhost`
+* If you're developing Inject page, please allow `https://localhost:3000` connections. (Because `injectpage` injected into HTTPS pages, so webpack server procotol must be https.) You can allow localhost connections by setting the chrome flag at: `chrome://flags/#allow-insecure-localhost`
 * [Load unpacked extensions](https://developer.chrome.com/extensions/getstarted#unpacked) with `./dev` folder.
 
 #### React/Redux hot reload
@@ -62,21 +69,6 @@ If you want to build `crx` file (auto update), please provide options, and add `
 
 See [autoupdate guide](https://developer.chrome.com/extensions/autoupdate) for more information.
 
-## Test
-
-* `test/app`: React components, Redux actions & reducers tests
-* `test/e2e`: E2E tests (use [chromedriver](https://www.npmjs.com/package/chromedriver), [selenium-webdriver](https://www.npmjs.com/package/selenium-webdriver))
-
-```bash
-# lint
-$ npm run lint
-# test/app
-$ npm test
-$ npm test -- --watch  # watch files
-# test/e2e
-$ npm run build
-$ npm run test-e2e
-```
 
 ## LICENSE
 
