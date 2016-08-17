@@ -7,12 +7,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-const styles = {
-  radioButton: {
-    marginTop: 16,
-  },
-};
-
 /**
  * Dialog for creating a new card
  */

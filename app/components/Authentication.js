@@ -6,7 +6,6 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
-
 /**
  * Dialog for authenticating
  */
@@ -32,7 +31,6 @@ export default class Authentication extends React.Component {
   };
 
   handleSubmit = () => {
-    console.log("wanna save userData:", this.state.userData);
     this.setState({open: false});
     this.props.onSave(this.state.userData);
   };
@@ -46,7 +44,7 @@ export default class Authentication extends React.Component {
         onTouchTap={this.handleClose}
       />,
       <FlatButton
-        label="Save"
+        label="Login"
         primary={true}
         keyboardFocused={true}
         onTouchTap={this.handleSubmit}
@@ -62,43 +60,41 @@ export default class Authentication extends React.Component {
     };
 
     return (
-      <div>
+        <div>
         <FlatButton
-          label="Authenticate"
-          primary={true}
-          onTouchTap={this.handleOpen}
-          />
-
-      <Dialog
-        title="Authentication"
-          actions={actions}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-          >
-          <TextField
-            hintText="jane@example.com"
-            floatingLabelText="Username"
-            onChange={ e => {
-              var userData = Object.assign({}, this.state.userData, {username: e.target.value});
-              console.log(userData);
-              this.setState({userData}); console.log(e.target.value, this.state.userData);} }
-              id="username"
-              />
-            <br />
-            <TextField
-              hintText="Pass Phrase"
-              floatingLabelText="Pass Phrase"
-              type="password"
-              onChange={ e => {
-                var userData = Object.assign({}, this.state.userData, {passphrase: e.target.value});
-                console.log(userData);
-                this.setState({userData}); console.log(e.target.value, this.state.userData);} }
-                id="passphrase"
-                />
-              </Dialog>
-            </div>
+      label="Authenticate"
+      primary={true}
+      onTouchTap={this.handleOpen}
+        />
+        
+        <Dialog
+      title="Authentication"
+      actions={actions}
+      modal={false}
+      open={this.state.open}
+      onRequestClose={this.handleClose}
+      autoScrollBodyContent={true}
+        >
+        <TextField
+      hintText="jane@example.com"
+      floatingLabelText="Username"
+      onChange={ e => {
+        var userData = Object.assign({}, this.state.userData, {username: e.target.value});
+        this.setState({userData});} }
+      id="username"
+        />
+        <br />
+        <TextField
+      hintText="Pass Phrase"
+      floatingLabelText="Pass Phrase"
+      type="password"
+      onChange={ e => {
+        const userData = Object.assign({}, this.state.userData, {passphrase: e.target.value});
+        this.setState({userData});} }
+      id="passphrase"
+        />
+        </Dialog>
+        </div>
     );
   }
 }

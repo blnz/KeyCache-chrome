@@ -1,4 +1,5 @@
 const bluebird = require('bluebird');
+
 import {toByteArray, fromByteArray} from 'base64-js'
 
 function stringToArrayBuffer(string) {
@@ -11,18 +12,19 @@ function arrayBufferToString(abuf) {
   return decoder.decode(abuf);
 }
 
-// Wraps a webcrypto key in a password,
+// Wraps a webcrypto CryptoKey in a password,
 // yeilding an object we can serialize to JSON
 // the wrapped key produced is an object with three fields of base64
 // encoded Uint8Arrays: { salt, iv, wrapped }
 //
 export function wrappedKey(password, wrappable) {
   const salt = window.crypto.getRandomValues(new Uint8Array(8))
-  const iterations = 100
+  const iterations = 1000
   const hash = 'SHA-256'
   const iv  = window.crypto.getRandomValues(new Uint8Array(16))
 
   return new Promise( function(resolve, reject) {
+    // first we import the password into a CryptoKey object
     return window.crypto.subtle.importKey(
       "raw",
       stringToArrayBuffer(password),
@@ -30,8 +32,9 @@ export function wrappedKey(password, wrappable) {
       false,
       ["deriveKey"]
     ).
+      
     // Derive a key from the password
-    then(function(baseKey){
+    then( (baseKey) => {
       return window.crypto.subtle.deriveKey(
         {
           "name": "PBKDF2",
@@ -44,19 +47,15 @@ export function wrappedKey(password, wrappable) {
         true,                               // Extrable
         ["encrypt", "decrypt", "wrapKey"]              // For new key
       );
-    }).
-    then(function(derivedWrappingKey) {
+    }).then( (derivedWrappingKey) => {
       return window.crypto.subtle.wrapKey(
-        "jwk", //can be "jwk", "raw", "spki", or "pkcs8"
-        wrappable, //the key you want to wrap, must be able to export to above format
-        derivedWrappingKey, //the AES-CBC key with "wrapKey" usage flag
+        "jwk",      //can be "jwk", "raw", "spki", or "pkcs8"
+        wrappable,  
+        derivedWrappingKey,  //the AES-CBC key with "wrapKey" usage flag
         {   name: "AES-CBC", iv: iv }
       )
-    }).
-    then(function(wrapped){
+    }).then( (wrapped) => {
       //returns an ArrayBuffer containing the encrypted data
-      console.log("wrapped", wrapped)
-      console.log("asArray", new Uint8Array(wrapped));
       resolve({
         wrapped: fromByteArray(new Uint8Array(wrapped)),
         iv: fromByteArray(iv),
@@ -70,10 +69,10 @@ export function wrappedKey(password, wrappable) {
   })
 }
 
+// returns a promise that resolves to the wrapped CryptoKey
 export function unWrappedKey(password, serialized) {
   const { wrapped, iv, salt } = serialized
-  console.log("unWrapped key with serialized:", serialized)
-  const iterations = 100
+  const iterations = 1000
   const hash = 'SHA-256'
 
   return new Promise( function(resolve, reject) {
@@ -85,7 +84,6 @@ export function unWrappedKey(password, serialized) {
       ["deriveKey"]).
       // Derive a key from the password
       then(function(baseKey){
-        console.log("base key was imported, salt is:")
         return window.crypto.subtle.deriveKey(
           {
             "name": "PBKDF2",
@@ -101,7 +99,6 @@ export function unWrappedKey(password, serialized) {
       }).
 
       then(function(derivedWrappingKey) {
-        console.log("we have our derived wrappingKey", derivedWrappingKey)
         return window.crypto.subtle.unwrapKey(
           "jwk", //"jwk", "raw", "spki", or "pkcs8" (whatever was used in wrapping)
           toByteArray(wrapped), //the key you want to unwrap
@@ -119,8 +116,6 @@ export function unWrappedKey(password, serialized) {
       )
     })
     .then(function(key){
-      //returns a key object
-      console.log(key);
       resolve(key)
     })
     .catch(function(err){
@@ -130,29 +125,27 @@ export function unWrappedKey(password, serialized) {
   })
 }
 
-
 export function kcEncrypt(key, data) {
   const iv = window.crypto.getRandomValues(new Uint8Array(16))
-
+  
   return window.crypto.subtle.encrypt(
     {
       name: "AES-CBC",
       iv: iv
     },
-    key, //from generateKey or importKey above
-    data //ArrayBuffer of data you want to encrypt
-  )
-  .then(function(encrypted){
-    //returns an ArrayBuffer containing the encrypted data
-    console.log(new Uint8Array(encrypted));
+    key, 
+    data  //ArrayBuffer of data  to encrypt
+  ).then( (encrypted) => {
+    // we got ArrayBuffer containing the encrypted data
     return { iv: iv, cipherText: new Uint8Array(encrypted) }
-  })
-  .catch(function(err){
+  }).catch(function(err){
     console.error(err);
   });
 }
 
-//returns a an object with two fields: {iv64, cipherText64} both fields
+//returns a an object with two fields: {iv64, cipherText64} both fields containing
+// base64 encoded byte arrays
+
 export function encryptStringToSerialized(key, data) {
   return kcEncrypt(key, stringToArrayBuffer(data))
   .then(function(encrypted) {
@@ -162,20 +155,6 @@ export function encryptStringToSerialized(key, data) {
   .catch(function(err){
     console.error(err);
   });
-}
-
-// decrypts a object with two fields: {iv64, cipherText64} both fields
-// base64 encoded Uint8Arrays which we'll decrypt with the given key
-// and resolve the decrypted bytes to a utf8 string
-export function decryptSerializedToString(key, serialized) {
-  const { iv64, cipherText64 } = serialized
-  return kcDecrypt(key, toByteArray(iv64), toByteArray(cipherText64))
-  .then(function(bytes){
-    return arrayBufferToString(bytes)
-  })
-  .catch(function(err){
-    console.error(err);
-  })
 }
 
 export function kcDecrypt(key, iv, data) {
@@ -190,6 +169,21 @@ export function kcDecrypt(key, iv, data) {
   .then (function(decrypted) {
     console.log("we've decrypted to:", new Uint8Array(decrypted));
     return decrypted
+  })
+}
+
+// decrypts a object with two fields: {iv64, cipherText64} both fields
+// base64 encoded Uint8Arrays which we'll decrypt with the given key
+// and resolve the decrypted bytes to a utf8 string
+
+export function decryptSerializedToString(key, serialized) {
+  const { iv64, cipherText64 } = serialized
+  return kcDecrypt(key, toByteArray(iv64), toByteArray(cipherText64))
+  .then(function(bytes){
+    return arrayBufferToString(bytes)
+  })
+  .catch(function(err){
+    console.error(err);
   })
 }
 

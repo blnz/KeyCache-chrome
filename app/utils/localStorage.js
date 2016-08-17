@@ -27,15 +27,16 @@ const encryptedCards = (cards) => {
 
 export const saveState = (state) => {
   try {
-    // console.log("going to save state", state);
+
     const cards = encryptedCards(state.cards)
     const savable = { user: state.user, cards }
     const serializedState = JSON.stringify(savable);
-    console.log("saving serialized:", serializedState);
+
+    //    console.log("saving serialized:", serializedState);
 
     localStorage.setItem('state', serializedState);
 
-    console.log("getting it back from local storage yeilds", localStorage['state']);
+    // console.log("getting it back from local storage yeilds", localStorage['state']);
   } catch (err) {
     console.log("failed to stringify state");
   }

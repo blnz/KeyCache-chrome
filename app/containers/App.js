@@ -54,17 +54,14 @@ export default class App extends Component {
   };
 
   handleRegister = userData => {
-    console.log("app register:", userData);
     this.props.actions.registerUser(userData);
   }
 
   handleLogin = userData => {
-    console.log("app login:", userData);
     this.props.actions.authenticateUser(userData);
   }
 
   handleLogout = () => {
-    console.log("app logout:");
     this.props.actions.logoutUser();
   }
 
@@ -74,7 +71,6 @@ export default class App extends Component {
 
   render() {
 
-    console.log("props:", this.props)
     const { user, cards, temps, actions } = this.props;
 
     var mainMenu =

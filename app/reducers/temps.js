@@ -23,22 +23,10 @@ const actionsMap = {
     return {};
   },
 
-  [ActionTypes.ADD_CARD](state, action) {
-    const { clear, encrypted } = action.cardData
-    const ocards = state.cards || []
-    console.log(action, clear, encrypted)
- 
-    return Object.assign({}, state, { cards: [{
-      id: 12345,
-      version: 1,
-      clear,
-      encrypted 
-    }, ...ocards ]});
-  },
-
   [ActionTypes.REGISTER_USER](state, action) {
     console.log("temp: registerUser reducer with action:", action);
-    const returnable = Object.assign({}, state, { user: action.userData });
+    const { username, wrapped } = action.userData
+    const returnable = Object.assign({}, state, { user: { username, wrapped } });
     console.log("temp: should be mutating to:", returnable)
     return returnable
   }

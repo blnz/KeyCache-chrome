@@ -20,7 +20,7 @@ export function addCard(cardData) {
     const clear = JSON.stringify(cardData)
 
     encryptStringToSerialized(key, clear).then( encrypted => {
-      console.log("gonna add CardData ", { clear: cardData, encrypted })
+      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
       return dispatch(addCardData({ clear: cardData, encrypted }))
     })
   }
@@ -38,14 +38,12 @@ export function registerUser(userData) {
     );
     
     keyPromise.then( masterKey => {
-      console.log("proceeding with new MasterKey:", masterKey)
+      //      console.log("proceeding with new MasterKey:", masterKey)
       dispatch(setClearMasterKey(masterKey))
       return wrappedKey(userData.passphrase, masterKey)
     }).then (function(wrapped) {
-      console.log("got wrapped and serialized masterkey", wrapped)
+      //      console.log("got wrapped and serialized masterkey", wrapped)
       return  dispatch(registerUserData(Object.assign({}, userData, { wrapped })))
-    }).then( () => {
-      console.log("we've dispatched userData")
     }).catch( err => {
       console.log("caught:", err)
     })
@@ -96,7 +94,7 @@ export function logoutUser() {
   return { type: types.REMOVE_CLEAR_MASTERKEY };
 }
 
-// wipes out all data!
+// wipes out all data!!!
 export function deleteAll() {
   return { type: types.DELETE_ALL };
 }
