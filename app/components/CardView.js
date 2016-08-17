@@ -8,7 +8,7 @@ import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 /**
- * Dialog for creating a new card
+ * Dialog for interacting with a card
  */
 export default class CardView extends React.Component {
 
@@ -35,6 +35,7 @@ export default class CardView extends React.Component {
   handleDelete = () => {
     // umm
   }
+
   handleCancel = () => {
     this.props.onCancel()
   };
@@ -44,7 +45,8 @@ export default class CardView extends React.Component {
   };
 
   render() {
-
+    const { clear } = this.props.card
+    
     const actions = this.props.viewMode != "view" ? [
         <FlatButton
       label="Cancel"
@@ -58,7 +60,8 @@ export default class CardView extends React.Component {
       onTouchTap={this.handleSubmit}
         />,
     ] : [] ;
-    
+
+    const disabled = "view" === this.props.viewMode
     return (
 
         <Dialog
@@ -69,12 +72,12 @@ export default class CardView extends React.Component {
               onRequestClose={this.handleCancel}
               autoScrollBodyContent={true}
               >
-
               
       <TextField
       hintText="Card name"
       floatingLabelText="Name"
-
+      disabled={disabled}
+      defaultValue={clear.name}
       onChange={ e => {var card = Object.assign({}, this.state.card, {name: e.target.value});
       this.setState({card});} }
       id="name"
@@ -82,6 +85,8 @@ export default class CardView extends React.Component {
       <TextField
       hintText="www.example.com"
       floatingLabelText="URL"
+      disabled={disabled}
+      defaultValue={clear.url}
       onChange={ e => {var card = Object.assign({}, this.state.card, {url: e.target.value});
       this.setState({card});} }
       id="url"
@@ -89,6 +94,8 @@ export default class CardView extends React.Component {
       <TextField
       hintText="jane@example.com"
       floatingLabelText="Username"
+      disabled={disabled}
+      defaultValue={clear.username}
       onChange={ e => {var card = Object.assign({}, this.state.card, {username: e.target.value});
       this.setState({card});} }
       id="username"
@@ -97,6 +104,8 @@ export default class CardView extends React.Component {
       hintText="Password Field"
       floatingLabelText="Password"
       type="password"
+      disabled={disabled}
+      defaultValue={clear.password}
       onChange={ e => {var card = Object.assign({}, this.state.card, {password: e.target.value});
       this.setState({card});} }
       id="password"
@@ -105,6 +114,8 @@ export default class CardView extends React.Component {
       hintText="MultiLine with rows: 2 and rowsMax: 4"
       multiLine={true}
       floatingLabelText="Notes"
+      disabled={disabled}
+      defaultValue={clear.note}
       onChange={ e => {var card = Object.assign({}, this.state.card, {note: e.target.value});
       this.setState({card});} }
       id="note"
