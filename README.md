@@ -17,7 +17,7 @@ alpha
 
 ```bash
 # clone it
-$ git clone https://github.com/blnz/KeyCache-chrome-extension.git
+$ git clone https://github.com/blnz/KeyCache-chrome.git
 
 # Install dependencies
 $ npm install
