@@ -17,7 +17,7 @@ export default class CardsList extends Component {
   }
   
   handleCreate = card => {
-    this.props.actions.addCard(card);
+    this.props.actions.addCard(card.clear);
   }
   
   handleCardOpen = card => {
@@ -27,14 +27,23 @@ export default class CardsList extends Component {
   
   handleCardSave = card => {
     console.log("wanna save edited card", card)
-    // fire an action
-    this.setState({})
+    this.props.actions.updateCardData(card)
+    this.setState({ activeCard: false})
   }
 
   handleCardDelete = card => {
     console.log("wanna delete card", card)
-    // fire some action
+    this.props.actions.deleteCard(card)
     this.setState({ activeCard: false})
+  }
+
+
+  handleCardEdit = card => {
+    console.log("wanna edit card", card)
+    // fire some action
+    this.setState({ activeCard: false,
+                    editCard: true
+                  })
   }
 
   render() {
@@ -49,6 +58,7 @@ export default class CardsList extends Component {
         onSave={this.handleCardSave} />
       )
     }
+    
     return (
         <div>
         <List>

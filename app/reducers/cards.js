@@ -15,7 +15,7 @@ const actionsMap = {
     }, ...state];
   },
 
-  [ActionTypes.UPDATE_DECRYPTED](state, action) {
+  [ActionTypes.UPDATE_CARD](state, action) {
     const { clear, encrypted } = action.cardData
     return [ action.cardData, ...state.filter( (card) =>  card.id != action.cardData.id ) ]
   },

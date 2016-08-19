@@ -11,6 +11,14 @@ export function addCardData(cardData) {
   return { type: types.ADD_CARD, cardData };
 }
 
+export function deleteCard(cardData) {
+  return { type: types.DELETE_CARD, id: cardData.id };
+}
+
+export function updateCardData(cardData) {
+  return { type: types.UPDATE_CARD, cardData };
+}
+
 // a new card has been created, we encrypt the data for storage, and keep the clear
 // data for usage, for now
 export function addCard(cardData) {
@@ -24,6 +32,26 @@ export function addCard(cardData) {
       return dispatch(addCardData({
         id: require('node-uuid').v4(),
         clear: cardData,
+        encrypted }))
+    })
+  }
+}
+
+
+// updated, we encrypt the data for storage, and keep the clear
+// data for usage, for now
+export function updateCard(card) {
+  return function (dispatch, getState) {
+
+    const key = getState().temps.masterKey
+    const clear = JSON.stringify(card.clear)
+
+    encryptStringToSerialized(key, clear).then( encrypted => {
+      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
+      return dispatch(updateCardData({
+        id: card.id,
+        version: -1,
+        clear: card.clear,
         encrypted }))
     })
   }
@@ -78,7 +106,7 @@ export function authenticateUser(userAuthData) {
         if (!card.clear && card.encrypted) {
           decryptSerializedToString(key, card.encrypted).then( (json) => {
             const clear = JSON.parse(json)
-            dispatch( { type: types.UPDATE_DECRYPTED, cardData: Object.assign({}, card, { clear }) })
+            dispatch( { type: types.UPDATE_CARD, cardData: Object.assign({}, card, { clear }) })
           })
         }
       })

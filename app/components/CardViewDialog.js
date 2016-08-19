@@ -17,6 +17,7 @@ export default class CardViewDialog extends React.Component {
 
   state = {
     open: true,
+    viewMode: "view",
     card: {}
   };
 
@@ -31,8 +32,18 @@ export default class CardViewDialog extends React.Component {
     console.log("will mount")
     this.setState({open: true })
   }
-  
 
+  handleEdit = (card) => {
+    console.log("wanna edit card", card)
+    this.setState( {viewMode: "edit"} )
+  }
+
+  handleDelete = (card) => {
+    console.log("wanna delete card", card)
+    this.props.onDelete(card)
+    this.setState({open: false})
+  }
+  
   handleOpen = () => {
     this.setState({open: true,
                    card: {}});
@@ -41,7 +52,7 @@ export default class CardViewDialog extends React.Component {
   handleClose = () => {
     this.setState({open: false,
                    card: {}});
-    this.props.onDelete(this.props.card)    // this.setState({open: false});
+    //    this.props.onDelete(this.props.card)    // this.setState({open: false});
   };
 
   handleSubmit = (card) => {
@@ -51,15 +62,21 @@ export default class CardViewDialog extends React.Component {
   };
 
   render() {
+    console.log("rendering with props", this.props)
+    
     var dialog
     if (this.state.open) {
       dialog = (
-          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} viewMode="view" card={this.props.card} />
+          <div>
+          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} onDelete={this.handleDelete} viewMode={this.state.viewMode} onEdit={this.handleEdit} card={this.props.card} />
+          </div>
       );
     }
+    
     return (
-      <div>
-        { dialog }
+        <div>
+        
+      { dialog }
       </div>
     );
   }

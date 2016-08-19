@@ -5,10 +5,19 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import IconButton from 'material-ui/IconButton';
+
+import FontIcon from 'material-ui/FontIcon';
+import {red500, yellow500, blue500} from 'material-ui/styles/colors';
+
+const iconStyles = {
+  margin: 20,
+};
+
 
 /**
  * Dialog for interacting with a card
+ * supports create, edit and view modes
  */
 export default class CardView extends React.Component {
 
@@ -16,24 +25,32 @@ export default class CardView extends React.Component {
   static propTypes = {
     onSave:  PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired, 
-    // onEdit: PropTypes.func.isRequired, 
-    // onDelete: PropTypes.func.isRequired, 
+    onEdit: PropTypes.func,
+    onDelete: PropTypes.func,
     viewMode: PropTypes.string.isRequired,
     card: PropTypes.object
   };
 
-  state = { card: {} }
+  state = { card: { clear: {} } }
 
   componentWillReceiveProps = (props) => {
+    const { clear } = props.card
     console.log("got props:", props)
+    this.setState( { clear } )
+  }
+
+  componentWillMount = () => {
+    console.log( "willMount with props:", this.props )
+    const { clear } = this.props.card
+    this.setState( { clear } )
   }
   
   handleEdit = () => {
-    // umm
+     this.props.onEdit(this.props.card)
   }
 
   handleDelete = () => {
-    // umm
+     this.props.onDelete(this.props.card)
   }
 
   handleCancel = () => {
@@ -41,11 +58,12 @@ export default class CardView extends React.Component {
   };
 
   handleSubmit = () => {
-    this.props.onSave(this.state.card);
+    const { clear } = this.state
+    this.props.onSave(Object.assign({}, this.props.card, { clear } ) )
   };
 
   render() {
-    const { clear } = this.props.card
+    console.log("CardView rendering with props", this.props)
     
     const actions = this.props.viewMode != "view" ? [
         <FlatButton
@@ -61,25 +79,52 @@ export default class CardView extends React.Component {
         />,
     ] : [] ;
 
+    const vaStyle = {
+      textAlign: "right"
+    }
+    
+    const ViewTitle = () => {
+      if (this.props.viewMode === "view") {
+        return ( 
+            <div style={vaStyle}>
+            <IconButton  style={iconStyles} tooltip="edit"   onTouchTap={this.handleEdit}>
+            <FontIcon className="material-icons">create</FontIcon>
+            </IconButton>
+            <IconButton  style={iconStyles} tooltip="delete"  onTouchTap={this.handleDelete}>
+            <FontIcon className="material-icons">delete</FontIcon>
+            </IconButton>
+            <IconButton   style={iconStyles} tooltip="close" onTouchTap={this.handleCancel}>
+            <FontIcon className="material-icons">clear</FontIcon>
+            </IconButton>
+            </div>
+          );
+      } else {
+        return (
+            <div />
+        )
+      }
+    }
+
+    const { clear } = this.state
+
     const disabled = "view" === this.props.viewMode
     return (
 
         <Dialog
-      title={ this.props.viewMode === "create" ? "New Card" : "" }
-              actions={actions}
+      title={ this.props.viewMode === "create" ? "New Card" : <ViewTitle /> }
+              actions={ actions }
               modal={false}
               open={true}
               onRequestClose={this.handleCancel}
               autoScrollBodyContent={true}
               >
-              
       <TextField
       hintText="Card name"
       floatingLabelText="Name"
       disabled={disabled}
       defaultValue={clear.name}
-      onChange={ e => {var card = Object.assign({}, this.state.card, {name: e.target.value});
-      this.setState({card});} }
+      onChange={ e => {var clear = Object.assign({}, this.state.clear, {name: e.target.value} );
+                       this.setState({ clear });} }
       id="name"
       /><br />
       <TextField
@@ -87,8 +132,8 @@ export default class CardView extends React.Component {
       floatingLabelText="URL"
       disabled={disabled}
       defaultValue={clear.url}
-      onChange={ e => {var card = Object.assign({}, this.state.card, {url: e.target.value});
-      this.setState({card});} }
+      onChange={ e => {var clear = Object.assign({}, this.state.clear, {url: e.target.value});
+      this.setState({clear});} }
       id="url"
       /><br />
       <TextField
@@ -96,8 +141,8 @@ export default class CardView extends React.Component {
       floatingLabelText="Username"
       disabled={disabled}
       defaultValue={clear.username}
-      onChange={ e => {var card = Object.assign({}, this.state.card, {username: e.target.value});
-      this.setState({card});} }
+      onChange={ e => {var clear = Object.assign({}, this.state.clear, {username: e.target.value});
+      this.setState({clear});} }
       id="username"
       /><br />
       <TextField
@@ -106,8 +151,8 @@ export default class CardView extends React.Component {
       type="password"
       disabled={disabled}
       defaultValue={clear.password}
-      onChange={ e => {var card = Object.assign({}, this.state.card, {password: e.target.value});
-      this.setState({card});} }
+      onChange={ e => {var clear = Object.assign({}, this.state.clear, {password: e.target.value});
+      this.setState({clear});} }
       id="password"
       /><br />
       <TextField
@@ -116,8 +161,8 @@ export default class CardView extends React.Component {
       floatingLabelText="Notes"
       disabled={disabled}
       defaultValue={clear.note}
-      onChange={ e => {var card = Object.assign({}, this.state.card, {note: e.target.value});
-      this.setState({card});} }
+      onChange={ e => {var clear = Object.assign({}, this.state.clear, {note: e.target.value});
+      this.setState({clear});} }
       id="note"
       rows={2}
       rowsMax={4}

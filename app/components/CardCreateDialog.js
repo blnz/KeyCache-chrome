@@ -11,13 +11,12 @@ import CardView from './CardView'
 export default class CardCreateDialog extends React.Component {
 
   static propTypes = {
-    onSave:  PropTypes.func.isRequired,
-    card: PropTypes.object
+    onSave:  PropTypes.func.isRequired
   };
 
   state = {
     open: false,
-    card: {}
+    card: { clear: {} }
   };
 
   handleOpen = () => {
@@ -49,7 +48,7 @@ export default class CardCreateDialog extends React.Component {
     var dialog
     if (this.state.open) {
       dialog = (
-          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} viewMode="create" />
+          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} card={ { clear: {} }} viewMode="create" />
       );
     }
     return (
