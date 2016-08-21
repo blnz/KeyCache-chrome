@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { render } from 'react-dom';
 import Dock from 'react-dock';
 
+//
+// inserts an iframe with the KeyCache UI
+//
 export default class InjectApp extends Component {
   constructor(props) {
     super(props);
@@ -12,9 +15,14 @@ export default class InjectApp extends Component {
     this.setState({ isVisible: !this.state.isVisible });
   };
 
+  iaStyle = {
+    position: "absolute",
+    top: 0,
+    right: 0
+  }
   render() {
     return (
-      <div>
+        <div style={this.iaStyle} >
         <button onClick={this.buttonOnClick}>
           KeyCache
         </button>

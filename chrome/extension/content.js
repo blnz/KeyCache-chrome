@@ -7,14 +7,14 @@ import InjectApp from './inject';
 
 console.log("InjectApp is:", InjectApp);
 
-function getLoginForm(){
+function getLoginForm() {
   var forms = document.getElementsByTagName('form');
 
   var login_forms = [];
 
   var login_keywords_arr = ["signin", "sign_in", "login", "log_in"];
 
-  for(var i=0; i<forms.length; i++){
+  for (var i = 0; i < forms.length; i++) {
     var username_field;
     var password_field;
     var possess_login_keyword = false;
@@ -33,15 +33,15 @@ function getLoginForm(){
       return text_fields.length;
     }();
 
-    if(text_fields.length > 0){
+    if (text_fields.length > 0) {
       username_field = text_fields[0];
     }
 
-    if(email_fields.length > 0){
+    if (email_fields.length > 0) {
       username_field = email_fields[0];
     }
 
-    if(password_fields.length > 0){
+    if (password_fields.length > 0) {
       password_field = password_fields[0];
     }
 
@@ -60,18 +60,18 @@ function getLoginForm(){
       }
     }
 
-    if(username_field_count == 1 && password_field_count == 1){
+    if (username_field_count == 1 && password_field_count == 1) {
       login_forms.push({'username_field': username_field, 'password_field': password_field, 'possess_login_keyword': possess_login_keyword});
     }
   }
 
   // Get only visible forms
-  if(login_forms.length > 1){
-    login_forms = function(forms){
+  if (login_forms.length > 1) {
+    login_forms = function(forms) {
       var result = new Array();
 
-      for(var i=0; i<forms.length; i++){
-        if(VISIBILITY.isVisible(forms[i].username_field) && VISIBILITY.isVisible(forms[i].password_field)){
+      for (var i = 0; i < forms.length; i++) {
+        if (VISIBILITY.isVisible(forms[i].username_field) && VISIBILITY.isVisible(forms[i].password_field)){
           result.push(forms[i]);
         }
       }
@@ -82,11 +82,11 @@ function getLoginForm(){
 
   // Get the forms only containing login keywords
   if (login_forms.length > 1){
-    login_forms = function(forms){
+    login_forms = function(forms) {
       var result = new Array();
 
-      for(var i=0; i<forms.length; i++){
-        if(forms[i].possess_login_keyword){
+      for (var i = 0; i < forms.length; i++) {
+        if (forms[i].possess_login_keyword) {
           result.push(forms[i]);
         }
       }
@@ -95,8 +95,8 @@ function getLoginForm(){
     }(login_forms);
   }
 
-  if(login_forms.length == 0){
-    // alert('IDKEY error: Login form could not be identified.');
+  if (login_forms.length == 0) {
+    console.log(' no login form could not be identified.');
     return undefined;
   } else if(login_forms.length == 1) {
     return {
@@ -104,7 +104,7 @@ function getLoginForm(){
       'password_field': login_forms[0].password_field
     }
   } else if(login_forms.length > 1){
-    alert('IDKEY error: There is more than one form on the page, which could be identified as login form.');
+    console.log('There is more than one form could be identified as login form.');
     return undefined;
   }
 }
@@ -112,7 +112,7 @@ function getLoginForm(){
 function fillCredentials(username, password){
   var login_form = getLoginForm();
 
-  if(login_form != undefined){
+  if (login_form != undefined){
     login_form.password_field.value = password;
     login_form.password_field.focus();
     login_form.password_field.blur();
@@ -126,8 +126,8 @@ function getInputsByType(node, type){
   var allInputs  = node.getElementsByTagName("input");
   var typeInputs = new Array();
 
-  for (var i=0; i<allInputs.length; i++) {
-    if(allInputs[i].type == type){
+  for (var i = 0; i < allInputs.length; i++) {
+    if (allInputs[i].type == type) {
       typeInputs.push(allInputs[i]);
     }
   }
@@ -135,15 +135,6 @@ function getInputsByType(node, type){
   return typeInputs;
 }
 
-function obfuscatePasswordString(s){
-  var result = '';
-
-  for(var i = 0; i < s.length; i++) {
-    result += '*';
-  }
-
-  return result;
-}
 
 
 /**
@@ -265,12 +256,35 @@ var VISIBILITY = (function(){
 
 var lf = getLoginForm();
 if (lf) {
-  console.log("found a login form");
-   const injectDOM = document.createElement('div');
-   injectDOM.className = 'inject-keycache';
-   injectDOM.style.textAlign = 'center';
-   document.body.appendChild(injectDOM);
-   render(<InjectApp />, injectDOM);
+  console.log("found a login form", lf);
+
+  chrome.runtime.sendMessage({
+    from:    'content',
+    subject: 'foundForm'
+  });
+  
+  // Listen for messages from the popup
+  chrome.runtime.onMessage.addListener(function (msg, sender, response) {
+
+    console.log("got message", sender, msg)
+
+    if (msg.subject === 'fillForm') {
+      console.log("will fill")
+      fillCredentials(msg.username, msg.password)
+    }
+
+    if (msg.subject === 'placeInjector') {
+      console.log("will place injector")
+      const injectDOM = document.createElement('div');
+      injectDOM.className = 'inject-keycache';
+      injectDOM.style.textAlign = 'center';
+      document.body.appendChild(injectDOM);
+      render(<InjectApp />, injectDOM);
+    }
+
+    
+  });
+  
 } else {
   console.log("no login form");
 }

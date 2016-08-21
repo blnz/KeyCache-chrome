@@ -1,11 +1,11 @@
 const bluebird = require('bluebird');
 global.Promise = bluebird;
 
-import * as types from '../constants/ActionTypes';
+import * as types from '../../../app/constants/ActionTypes';
 import { wrappedKey,
          unWrappedKey,
          encryptStringToSerialized,
-         decryptSerializedToString } from '../utils/kcCrypto';
+         decryptSerializedToString } from '../../../app/utils/kcCrypto';
 
 export function addCardData(cardData) {
   return { type: types.ADD_CARD, cardData };
@@ -98,11 +98,9 @@ export function authenticateUser(userAuthData) {
     
     return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
       console.log("got unwrapped master, send to background", masterKey);
-      chrome.runtime.sendMessage({from: "app",
-                                  subject: "authentication",
-                                  userAuthData }, function(response) {
-        console.log("got response", response);
-      });
+      // chrome.runtime.sendMessage({authentice: userAuthData}, function(response) {
+      //   console.log("got response", response);
+      // });
       dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
     }).then( () => {
 
