@@ -4,12 +4,11 @@ html
   head
     meta(charset='UTF-8')
     title KeyCache (Inject)
+    link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons', type='text/css' )
     style.
       html, body {
         background-color: rgba(0,0,0,0)
       }
   body
     #root
-    if env !== 'prod'
-      script(src='chrome-extension://lmhkpmbekcpmknklioeibfkpmmfibljd/js/inject.bundle.js')
     script(src=env == 'prod' ? '/js/kcapp.bundle.js' : 'https://localhost:3000/js/kcapp.bundle.js')
