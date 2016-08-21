@@ -48,7 +48,7 @@ export default class CardCreateDialog extends React.Component {
     var dialog
     if (this.state.open) {
       dialog = (
-          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} card={ { clear: {} }} viewMode="create" />
+          <CardView onSave={this.handleSubmit} onCancel={this.handleClose} card={ { clear: {type: "web" } }} viewMode="create" />
       );
     }
     return (

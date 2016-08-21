@@ -51,6 +51,7 @@ require('./background/contextMenus');
                 // require('./background/inject');
 require('./background/badge');
 
+
 chrome.runtime.onMessage.addListener(function (msg, sender) {
   console.log("got message from sender", msg, sender);
   
@@ -67,12 +68,20 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
   }
 
   if ((msg.from === 'content') && (msg.subject === 'foundForm')) {
-    chrome.tabs.sendMessage(sender.tab.id, {subject: "fillForm",
-                                            username: "willy",
-                                            password: "bopper"
-                                           }, function(response) {
-                                             console.log(response)
-                                           });
+    const { hostname } = new URL(sender.url)
+    
+    const hits = store.getState().cards.filter( ( card ) => {
+        return card.clear && (card.clear.type === "web") && (hostname === card.clear.url)
+    })
+
+    if (hits.length == 1) {
+      chrome.tabs.sendMessage(sender.tab.id, {subject: "fillForm",
+                                              username: hits[0].clear.username,
+                                              password: hits[0].clear.password
+                                             }, function(response) {
+                                               console.log(response)
+                                             });
+    } 
     chrome.tabs.sendMessage(sender.tab.id, {subject: "placeInjector",
                                            }, function(response) {
                                              console.log(response)
