@@ -20,15 +20,37 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
   console.log("got message from sender", msg, sender);
   
   // First, validate the message's structure
-  if ((msg.from === 'content') && (msg.subject === 'showPageAction')) {
-    // Enable the page-action for the requesting tab
-    chrome.pageAction.show(sender.tab.id);
-  }
-
-  // First, validate the message's structure
   if ((msg.from === 'app') && (msg.subject === 'authentication')) {
     console.log("authentication", msg)
     store.dispatch(myActions.authenticateUser(msg.userAuthData))
+    // forward to any popup that's listening
+    chrome.runtime.sendMessage({from: "background",
+                                subject: "authentication",
+                                userAuthData: msg.userAuthData }, function (resp) {
+                                  console.log("got response", resp)
+                                })
+  }
+
+  if ((msg.from === 'app') && (msg.subject === 'cardUpdate')) {
+    console.log("cardUpdate", msg)
+    store.dispatch(myActions.updateCardData(msg.cardData))
+    // forward to any popup that's listening
+    chrome.runtime.sendMessage({from: "background",
+                                subject: "cardUpdate",
+                                cardData: msg.cardData }, function (resp) {
+                                  console.log("got response", resp)
+                                })
+  }
+
+  if ((msg.from === 'app') && (msg.subject === 'cardCreate')) {
+    console.log("cardCreate", msg)
+    store.dispatch(myActions.addCardData(msg.cardData))
+    // forward to any popup that's listening
+    chrome.runtime.sendMessage({from: "background",
+                                subject: "cardCreate",
+                                cardData: msg.cardData }, function (resp) {
+                                  console.log("got response", resp)
+                                })
   }
 
   if ((msg.from === 'content') && (msg.subject === 'foundForm')) {

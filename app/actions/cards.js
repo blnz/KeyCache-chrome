@@ -23,16 +23,25 @@ export function updateCardData(cardData) {
 // data for usage, for now
 export function addCard(cardData) {
   return function (dispatch, getState) {
-
+    
     const key = getState().temps.masterKey
     const clear = JSON.stringify(cardData)
-
+    
     encryptStringToSerialized(key, clear).then( encrypted => {
       //      console.log("gonna add CardData ", { clear: cardData, encrypted })
-      return dispatch(addCardData({
+      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
+      const newCard = {
         id: require('node-uuid').v4(),
         clear: cardData,
-        encrypted }))
+        encrypted }
+      
+      chrome.runtime.sendMessage({from: "app",
+                                  subject: "cardCreate",
+                                  cardData: newCard }, function (resp) {
+                                    console.log("got response", resp)
+                                  })
+      
+      return dispatch(addCardData( newCard ))
     })
   }
 }
@@ -48,11 +57,21 @@ export function updateCard(card) {
 
     encryptStringToSerialized(key, clear).then( encrypted => {
       //      console.log("gonna add CardData ", { clear: cardData, encrypted })
-      return dispatch(updateCardData({
+
+      const updatedCard = {
         id: card.id,
         version: -1,
         clear: card.clear,
-        encrypted }))
+        encrypted }
+      
+      chrome.runtime.sendMessage({from: "app",
+                                  subject: "cardUpdate",
+                                  cardData: updatedCard }, function (resp) {
+                                    console.log("got response", resp)
+                                  })
+      
+      return dispatch(updateCardData( updatedCard ))
+
     })
   }
 }
@@ -103,6 +122,34 @@ export function authenticateUser(userAuthData) {
                                   userAuthData }, function(response) {
         console.log("got response", response);
       });
+      dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
+    }).then( () => {
+
+      const key = getState().temps.masterKey
+      const cards = getState().cards
+      cards.map( (card) => {
+        if (!card.clear && card.encrypted) {
+          decryptSerializedToString(key, card.encrypted).then( (json) => {
+            const clear = JSON.parse(json)
+            dispatch( { type: types.UPDATE_CARD, cardData: Object.assign({}, card, { clear }) })
+          })
+        }
+      })
+    }).catch( (err) => {
+      console.log(err)
+    });
+  }
+}
+
+// given user's secret, use it to open masterKey, then decrypt stuff 
+export function authenticateUserLocal(userAuthData) {
+  return function (dispatch, getState) {
+    // console.log("authenticateUser on dispatch userData:", userData);
+    // console.log("authenticateUser on dispatch getState() returns:", getState());
+    const { wrappedKey } = getState().user
+    const { passphrase } = userAuthData
+    
+    return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
       dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
     }).then( () => {
 

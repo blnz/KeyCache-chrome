@@ -32,3 +32,4 @@ require('./background/contextMenus');
 require('./background/badge');
 require('./background/server');
 
+window.isKeyCacheBackground = true; 

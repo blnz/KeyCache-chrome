@@ -27,7 +27,7 @@ export default class CardsList extends Component {
   
   handleCardSave = card => {
     console.log("wanna save edited card", card)
-    this.props.actions.updateCardData(card)
+    this.props.actions.updateCard(card)
     this.setState({ activeCard: false})
   }
 
