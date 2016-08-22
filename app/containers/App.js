@@ -135,9 +135,10 @@ export default class App extends Component {
         title="KeyCache"
         iconElementLeft={ <span /> }
         iconElementRight={ mainMenu } />
-
+          <div style={ { margin: "40px" } }>
           <div>Please authenticate</div>
           <Authentication onSave={this.handleLogin} user={user}/>
+          </div>
           </div>
           </MuiThemeProvider>
           </div>

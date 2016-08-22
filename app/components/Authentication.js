@@ -17,7 +17,7 @@ export default class Authentication extends React.Component {
   };
 
   state = {
-    open: false,
+    open: true,
     userData: {}
   };
 
