@@ -142,6 +142,39 @@ export function authenticateUser(userAuthData) {
 }
 
 // given user's secret, use it to open masterKey, then decrypt stuff 
+export function bgAuthenticateUser(userAuthData) {
+  return function (dispatch, getState) {
+    // console.log("authenticateUser on dispatch userData:", userData);
+    // console.log("authenticateUser on dispatch getState() returns:", getState());
+    const { wrappedKey } = getState().user
+    const { passphrase } = userAuthData
+    
+    return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
+      console.log("got unwrapped master, send to background", masterKey);
+      // chrome.runtime.sendMessage({authentice: userAuthData}, function(response) {
+      //   console.log("got response", response);
+      // });
+      dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
+    }).then( () => {
+
+      const key = getState().temps.masterKey
+      const cards = getState().cards
+      cards.map( (card) => {
+        if (!card.clear && card.encrypted) {
+          decryptSerializedToString(key, card.encrypted).then( (json) => {
+            const clear = JSON.parse(json)
+            dispatch( { type: types.UPDATE_CARD, cardData: Object.assign({}, card, { clear }) })
+          })
+        }
+      })
+    }).catch( (err) => {
+      console.log(err)
+    });
+  }
+}
+
+
+// given user's secret, use it to open masterKey, then decrypt stuff 
 export function authenticateUserLocal(userAuthData) {
   return function (dispatch, getState) {
     // console.log("authenticateUser on dispatch userData:", userData);

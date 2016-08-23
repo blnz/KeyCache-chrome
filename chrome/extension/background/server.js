@@ -6,7 +6,7 @@ import { wrappedKey,
          encryptStringToSerialized,
          decryptSerializedToString } from '../../../app/utils/kcCrypto';
 
-import  * as myActions  from './actions'
+import  * as myActions  from '../../../app/actions/cards'
 
 const persisted = loadState();
 const store = createStore(persisted);
@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
   // First, validate the message's structure
   if ((msg.from === 'app') && (msg.subject === 'authentication')) {
     console.log("authentication", msg)
-    store.dispatch(myActions.authenticateUser(msg.userAuthData))
+    store.dispatch(myActions.bgAuthenticateUser(msg.userAuthData))
     // forward to any popup that's listening
     chrome.runtime.sendMessage({from: "background",
                                 subject: "authentication",

@@ -89,7 +89,7 @@ export function registerUserData(userData) {
 }
 
 // given user's secret, use it to open masterKey, then decrypt stuff 
-export function authenticateUser(userAuthData) {
+export function bgAuthenticateUser(userAuthData) {
   return function (dispatch, getState) {
     // console.log("authenticateUser on dispatch userData:", userData);
     // console.log("authenticateUser on dispatch getState() returns:", getState());

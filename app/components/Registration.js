@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import Dialog from 'material-ui/Dialog';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
 /**
- * Dialog for registering a new account, or device
+ * Dialog for registering a new account
  */
 export default class Registration extends React.Component {
 
@@ -16,7 +14,7 @@ export default class Registration extends React.Component {
   };
 
   state = {
-    open: true,
+    open: false,
     userData: {}
   };
 
@@ -30,7 +28,6 @@ export default class Registration extends React.Component {
   };
 
   handleSubmit = () => {
-    //    console.log("wanna save userData:", this.state.userData);
     this.setState({open: false});
     this.props.onSave(this.state.userData);
   };
@@ -50,14 +47,6 @@ export default class Registration extends React.Component {
         onTouchTap={this.handleSubmit}
       />,
     ];
-    const fabStyle = {
-      margin: 0,
-      top: 'auto',
-      right: 20,
-      bottom: 20,
-      left: 'auto',
-      position: 'fixed',
-    };
 
     return (
         <div>

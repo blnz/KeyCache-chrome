@@ -53,6 +53,22 @@ export default class CardView extends React.Component {
      this.props.onDelete(this.props.card)
   }
 
+  handleShowPassword = () => {
+    this.setState( { showPassword: true })
+  }
+
+  handleHidePassword = () => {
+    this.setState( { showPassword: false })
+  }
+
+  handleGeneratePassword = () => {
+    
+  }
+
+  handleCopy = () => {
+
+  }
+  
   handleCancel = () => {
     this.props.onCancel()
   };
@@ -63,7 +79,6 @@ export default class CardView extends React.Component {
   };
 
   render() {
-    console.log("CardView rendering with props", this.props)
     
     const actions = this.props.viewMode != "view" ? [
         <FlatButton
@@ -81,6 +96,41 @@ export default class CardView extends React.Component {
 
     const vaStyle = {
       textAlign: "right"
+    }
+
+    const usernameField = () => {
+      return (
+          <div>
+          <TextField
+        hintText="jane@example.com"
+        floatingLabelText="Username"
+        disabled={disabled}
+        defaultValue={clear.username}
+        onChange={ e => {var clear = Object.assign({}, this.state.clear, {username: e.target.value});
+                         this.setState({clear});} }
+        id="username"
+          />
+          </div>
+      )
+    }
+    
+    const passwordField = () => {
+      return (
+          <div>
+          <TextField
+        hintText="Password Field"
+        floatingLabelText="Password"
+        type="password"
+        disabled={disabled}
+        defaultValue={clear.password}
+        onChange={ e => {var clear = Object.assign({}, this.state.clear, {password: e.target.value});
+                         this.setState({clear});} }
+        id="password"
+          />
+          
+          <div style={{display: "inline-block" }}>click me</div>
+          </div>
+      )
     }
     
     const ViewTitle = () => {
@@ -135,26 +185,11 @@ export default class CardView extends React.Component {
       onChange={ e => {var clear = Object.assign({}, this.state.clear, {url: e.target.value});
       this.setState({clear});} }
       id="url"
-      /><br />
-      <TextField
-      hintText="jane@example.com"
-      floatingLabelText="Username"
-      disabled={disabled}
-      defaultValue={clear.username}
-      onChange={ e => {var clear = Object.assign({}, this.state.clear, {username: e.target.value});
-      this.setState({clear});} }
-      id="username"
-      /><br />
-      <TextField
-      hintText="Password Field"
-      floatingLabelText="Password"
-      type="password"
-      disabled={disabled}
-      defaultValue={clear.password}
-      onChange={ e => {var clear = Object.assign({}, this.state.clear, {password: e.target.value});
-      this.setState({clear});} }
-      id="password"
-      /><br />
+        /><br />
+        { usernameField() }
+        <br />
+        { passwordField() }
+      <br />
       <TextField
       hintText="MultiLine with rows: 2 and rowsMax: 4"
       multiLine={true}

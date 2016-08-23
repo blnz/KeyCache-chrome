@@ -21,33 +21,45 @@ export default class CardsList extends Component {
   }
   
   handleCardOpen = card => {
-    console.log("wanna open card", card)
     this.setState( { activeCard: card, cardMode: "view" } )
   }
   
   handleCardSave = card => {
-    console.log("wanna save edited card", card)
     this.props.actions.updateCard(card)
     this.setState({ activeCard: false})
   }
 
   handleCardDelete = card => {
-    console.log("wanna delete card", card)
     this.props.actions.deleteCard(card)
     this.setState({ activeCard: false})
   }
 
-
   handleCardEdit = card => {
-    console.log("wanna edit card", card)
-    // fire some action
     this.setState({ activeCard: false,
                     editCard: true
                   })
   }
 
+  cardListItem = card => {
+    if (card.clear && card.clear.name) {
+      const children = (
+          <div>
+          <span>foo</span>
+          <br />
+          <span>bar</span>
+        </div>
+      )
+      
+      return (
+          <ListItem primaryText={card.clear.name}
+        secondaryText={card.clear.url ? card.clear.url : undefined}
+        onTouchTap={ (e) => { this.handleCardOpen(card) } }
+        key={card.id}/>
+      );
+    }
+  }
+  
   render() {
-    let self = this;
     var viewDialog
     if (this.state.activeCard) {
       viewDialog = (
@@ -62,15 +74,7 @@ export default class CardsList extends Component {
     return (
         <div>
         <List>
-        {  this.props.cards.map( card => {
-          if (card.clear && card.clear.name) {
-            return (
-                <ListItem primaryText={card.clear.name}
-              onTouchTap={ (e) => { this.handleCardOpen(card) } }
-              key={card.id}/>
-            );
-          }
-        } ) }
+        {  this.props.cards.map( card => { return this.cardListItem(card) } ) } 
       </List>
         { viewDialog }
         <CardCreateDialog onSave={this.handleCreate}/> 
@@ -78,3 +82,13 @@ export default class CardsList extends Component {
     );
   }
 }
+
+         // {  this.props.cards.map( card => {
+         //  if (card.clear && card.clear.name) {
+         //    return (
+         //        <ListItem primaryText={card.clear.name}
+         //      onTouchTap={ (e) => { this.handleCardOpen(card) } }
+         //      key={card.id}/>
+         //    );
+         //  }
+         // } ) }
