@@ -20,7 +20,6 @@ const iconStyles = {
  * supports create, edit and view modes
  */
 export default class CardView extends React.Component {
-
   
   static propTypes = {
     onSave:  PropTypes.func.isRequired,
@@ -115,12 +114,25 @@ export default class CardView extends React.Component {
     }
     
     const passwordField = () => {
+      const hideShow = this.state.showPassword ?
+            (
+                <IconButton  style={iconStyles} tooltip="hide"
+              onTouchTap={this.handleHidePassword}>
+                <FontIcon className="material-icons">visibility_off</FontIcon>
+                </IconButton>
+            ) : (
+                <IconButton  style={iconStyles} tooltip="show"
+              onTouchTap={this.handleShowPassword}>
+                <FontIcon className="material-icons">visibility</FontIcon>
+                </IconButton>
+            )
+      
       return (
           <div>
           <TextField
         hintText="Password Field"
         floatingLabelText="Password"
-        type="password"
+        type={this.state.showPassword ? "text" : "password"}
         disabled={disabled}
         defaultValue={clear.password}
         onChange={ e => {var clear = Object.assign({}, this.state.clear, {password: e.target.value});
@@ -128,7 +140,7 @@ export default class CardView extends React.Component {
         id="password"
           />
           
-          <div style={{display: "inline-block" }}>click me</div>
+          <div style={{display: "inline-block" }}>{hideShow}</div>
           </div>
       )
     }
