@@ -212,7 +212,14 @@ export function logoutUser() {
 }
 
 // wipes out all data!!!
-export function deleteAll() {
+export function wipeAllData() {
   return { type: types.DELETE_ALL };
+}
+
+// wipes out all data!!!
+export function deleteAll() {
+  chrome.runtime.sendMessage({from: "app",
+                              subject: "deleteAll" })
+  return wipeAllData()
 }
 

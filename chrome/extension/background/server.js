@@ -53,6 +53,17 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
                                 })
   }
 
+  // when a new window pups uup, it can come here to ee if user is already
+  // authenticated
+  if ((msg.from === 'app') && (msg.subject === 'getCredentials')) {
+    console.log("getCredentials", msg, JSON.serialize(store.getState().user))
+
+  }
+
+  if ((msg.from === 'app') && (msg.subject === 'deleteAll')) {
+    store.dispatch(myActions.wipeAllData())
+  }
+
   if ((msg.from === 'content') && (msg.subject === 'foundForm')) {
     const { hostname } = new URL(sender.url)
     
