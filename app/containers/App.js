@@ -154,7 +154,12 @@ export default class App extends Component {
         iconElementLeft={ <span /> }
         iconElementRight={ mainMenu } />
 
-          <div>Register, please</div>
+          <div style={{fontSize: "100%", margin: "20px"}}>
+          <h2>Welcome to <em>KeyCache</em>, the secure, open source password manager.</h2>
+          <p>On the next screen you'll be asked to come up with a username and a pass phrase</p>
+<p>The pass phrase will be used to secure all the data that KeyCache manages for you. KeyCache doesn't store the pass phrase, so if you lose or forget it, KeyCache won't be able to recover it. You'll want to invent a pass phrase that is possible for you to remember but impossible for others to guess.</p>
+         <p>To get started, click the "REGISTER" button, below</p>
+        </div>
           <Registration onSave={this.handleRegister} />
           </div>
           </MuiThemeProvider>
