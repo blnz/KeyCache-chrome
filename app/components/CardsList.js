@@ -4,6 +4,13 @@ import {List, ListItem} from 'material-ui/List';
 
 import CardCreateDialog from './CardCreateDialog';
 import CardViewDialog from './CardViewDialog';
+import TextField from 'material-ui/TextField';
+    
+const searchFilter = (str) => {
+  return card => {
+    return card.clear.name.includes(str)
+  }
+}
 
 export default class CardsList extends Component {
   
@@ -13,7 +20,7 @@ export default class CardsList extends Component {
   };
 
   state = {
-    activeCard: false
+    activeCard: false,
   }
   
   handleCreate = card => {
@@ -71,10 +78,27 @@ export default class CardsList extends Component {
       )
     }
     
+    const filteredCards = this.state.search ?
+          this.state.search.length > 0 ?
+          this.props.cards.filter(searchFilter(this.state.search)) :
+          this.props.cards :
+          this.props.cards
+
+    const sortedCards = filteredCards.sort( (a, b) => {
+      return a.clear.name.localeCompare(b.clear.name);
+    })
+          
+    
     return (
         <div>
+        <TextField
+      floatingLabelText="search"
+      onChange={ e => { this.setState( {search: e.target.value} );} }
+      id="username"
+        />
+        
         <List>
-        {  this.props.cards.map( card => { return this.cardListItem(card) } ) } 
+        {  sortedCards.map( card => { return this.cardListItem(card) } ) } 
       </List>
         { viewDialog }
         <CardCreateDialog onSave={this.handleCreate}/> 
@@ -82,13 +106,3 @@ export default class CardsList extends Component {
     );
   }
 }
-
-         // {  this.props.cards.map( card => {
-         //  if (card.clear && card.clear.name) {
-         //    return (
-         //        <ListItem primaryText={card.clear.name}
-         //      onTouchTap={ (e) => { this.handleCardOpen(card) } }
-         //      key={card.id}/>
-         //    );
-         //  }
-         // } ) }
