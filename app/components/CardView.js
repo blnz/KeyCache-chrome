@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 import FontIcon from 'material-ui/FontIcon';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
@@ -97,6 +98,16 @@ export default class CardView extends React.Component {
       textAlign: "right"
     }
 
+    const copyField = (value) => {
+      return(
+          <IconButton  style={iconStyles} tooltip="copy">
+          <CopyToClipboard text={value}>
+          <FontIcon className="material-icons">content_copy</FontIcon>
+          </CopyToClipboard>
+          </IconButton>
+      )
+    }
+      
     const usernameField = () => {
       return (
           <div>
@@ -109,6 +120,7 @@ export default class CardView extends React.Component {
                          this.setState({clear});} }
         id="username"
           />
+          <div style={{display: "inline-block" }}>{copyField(clear.username)}</div>
           </div>
       )
     }
@@ -139,7 +151,7 @@ export default class CardView extends React.Component {
                          this.setState({clear});} }
         id="password"
           />
-          
+          <div style={{display: "inline-block" }}>{copyField(clear.password)}</div>
           <div style={{display: "inline-block" }}>{hideShow}</div>
           </div>
       )
