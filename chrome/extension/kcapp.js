@@ -24,17 +24,23 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 const persisted = loadState();
-
 const store = createStore(persisted);
+
+chrome.runtime.sendMessage({from: "app",
+                            subject: "getCredentials"} , function (resp) {
+                              if (resp.from === "background" &&
+                                  resp.user &&
+                                  resp.user.passphrase) {
+                                store.dispatch(actions.authenticateUserLocal(resp.user))
+                              }
+                            })
 
 chrome.runtime.onMessage.addListener(
   function(msg, sender, sendResponse) {
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
-    if (msg.greeting === "hello") {
-      sendResponse({farewell: "goodbye"});
-    } else if (msg.from === 'background') {
+    if (msg.from === 'background') {
       console.log("got something from background", msg, sender);
       if (msg.subject === "authentication") {
         store.dispatch(actions.authenticateUserLocal(msg.userAuthData))
@@ -42,15 +48,12 @@ chrome.runtime.onMessage.addListener(
         store.dispatch(actions.updateCardData(msg.cardData))
       } else if (msg.subject === "cardCreate") {
         store.dispatch(actions.addCardData(msg.cardData))
+      } else if (msg.subject === "cardDelete") {
+        store.dispatch(actions.deleteCardData(msg.cardData))
       }
     }
   });
 
-
-// store.subscribe(() => {
-//  console.log("persisting state to localStorage", store.getState());
-// saveState(store.getState());
-// });
 
 ReactDOM.render(
     <Root store={ store } />,

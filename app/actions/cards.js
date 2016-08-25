@@ -11,8 +11,18 @@ export function addCardData(cardData) {
   return { type: types.ADD_CARD, cardData };
 }
 
-export function deleteCard(cardData) {
+export function deleteCardData(cardData) {
   return { type: types.DELETE_CARD, id: cardData.id };
+}
+
+export function deleteCard(cardData) {
+      
+      chrome.runtime.sendMessage({from: "app",
+                                  subject: "cardDelete",
+                                  cardData: cardData }, function (resp) {
+                                    console.log("got response", resp)
+                                  })
+      
 }
 
 export function updateCardData(cardData) {
@@ -41,7 +51,7 @@ export function addCard(cardData) {
                                     console.log("got response", resp)
                                   })
       
-      return dispatch(addCardData( newCard ))
+      // return dispatch(addCardData( newCard ))
     })
   }
 }
@@ -69,8 +79,9 @@ export function updateCard(card) {
                                   cardData: updatedCard }, function (resp) {
                                     console.log("got response", resp)
                                   })
-      
-      return dispatch(updateCardData( updatedCard ))
+
+      // we'll get the data back from background server && do the insert then
+      // return dispatch(updateCardData( updatedCard ))
 
     })
   }
@@ -91,9 +102,16 @@ export function registerUser(userData) {
       //      console.log("proceeding with new MasterKey:", masterKey)
       dispatch(setClearMasterKey(masterKey))
       return wrappedKey(userData.passphrase, masterKey)
-    }).then (function(wrapped) {
+    }).then (function(wrappedKey) {
       //      console.log("got wrapped and serialized masterkey", wrapped)
-      return  dispatch(registerUserData(Object.assign({}, userData, { wrapped })))
+      const newUserData = Object.assign({}, userData, { wrappedKey })
+      chrome.runtime.sendMessage({from: "app",
+                                  subject: "registration",
+                                  user: newUserData }, function(response) {
+        console.log("got response", response);
+      });
+      
+      return  dispatch(registerUserData(newUserData))
     }).catch( err => {
       console.log("caught:", err)
     })
@@ -144,16 +162,13 @@ export function authenticateUser(userAuthData) {
 // given user's secret, use it to open masterKey, then decrypt stuff 
 export function bgAuthenticateUser(userAuthData) {
   return function (dispatch, getState) {
-    // console.log("authenticateUser on dispatch userData:", userData);
-    // console.log("authenticateUser on dispatch getState() returns:", getState());
+
     const { wrappedKey } = getState().user
-    const { passphrase } = userAuthData
+    const { username, passphrase } = userAuthData
     
     return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
-      console.log("got unwrapped master, send to background", masterKey);
-      // chrome.runtime.sendMessage({authentice: userAuthData}, function(response) {
-      //   console.log("got response", response);
-      // });
+      console.log("got unwrapped master, here in background", masterKey);
+      dispatch( registerUserData({ username, passphrase, wrappedKey } ))
       dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
     }).then( () => {
 

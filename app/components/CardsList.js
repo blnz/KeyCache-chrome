@@ -49,13 +49,8 @@ export default class CardsList extends Component {
 
   cardListItem = card => {
     if (card.clear && card.clear.name) {
-      const children = (
-          <div>
-          <span>foo</span>
-          <br />
-          <span>bar</span>
-        </div>
-      )
+      console.log("card", card)
+      
       
       return (
           <ListItem primaryText={card.clear.name}

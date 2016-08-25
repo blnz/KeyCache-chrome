@@ -87,6 +87,7 @@ export default class App extends Component {
 
   handleLogout = () => {
     this.props.actions.logoutUser();
+    chrome.runtime.sendMessage({from: "app", subject: "logoutUser" })
   }
 
   handleWipe = event => {

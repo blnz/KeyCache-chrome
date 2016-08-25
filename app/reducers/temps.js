@@ -16,17 +16,19 @@ const actionsMap = {
 
   [ActionTypes.REMOVE_CLEAR_MASTERKEY](state, action) {
     const masterKey = undefined
-    return Object.assign({}, state, { masterKey });
+    const user = undefined
+    return Object.assign({}, state, { masterKey, user });
   },
 
   [ActionTypes.DELETE_ALL](state, action) {
     return {};
   },
 
+
   [ActionTypes.REGISTER_USER](state, action) {
     console.log("temp: registerUser reducer with action:", action);
-    const { username, wrapped } = action.userData
-    const returnable = Object.assign({}, state, { user: { username, wrapped } });
+    const { username, passphrase, wrappedKey } = action.userData
+    const returnable = Object.assign({}, state, { user: { username, passphrase, wrappedKey } });
     console.log("temp: should be mutating to:", returnable)
     return returnable
   }
