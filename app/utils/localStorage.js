@@ -4,7 +4,7 @@ export const loadState = () => {
     if (serializedState === null) {
       return undefined;
     }
-    console.log("serialized state is:", serializedState);
+    //    console.log("serialized state is:", serializedState);
     return JSON.parse(serializedState);
   } catch (err) {
     console.log("caught:", err);
@@ -19,12 +19,6 @@ const encryptedCards = (cards) => {
   );
 }
 
-// WebCrypto
-//    var sample = new Uint8Array(100);
-//    crypto.getRandomValues(sample);
-//    console.log("sample", sample);
-
-
 export const saveState = (state) => {
   try {
 
@@ -32,11 +26,8 @@ export const saveState = (state) => {
     const savable = { user: state.user, cards }
     const serializedState = JSON.stringify(savable);
 
-    console.log("saving serialized:", serializedState);
-
     localStorage.setItem('state', serializedState);
 
-     console.log("getting it back from local storage yeilds", localStorage['state']);
   } catch (err) {
     console.log("failed to stringify state");
   }

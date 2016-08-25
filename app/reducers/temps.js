@@ -24,13 +24,9 @@ const actionsMap = {
     return {};
   },
 
-
   [ActionTypes.REGISTER_USER](state, action) {
-    console.log("temp: registerUser reducer with action:", action);
     const { username, passphrase, wrappedKey } = action.userData
-    const returnable = Object.assign({}, state, { user: { username, passphrase, wrappedKey } });
-    console.log("temp: should be mutating to:", returnable)
-    return returnable
+    return Object.assign({}, state, { user: { username, passphrase, wrappedKey } });
   }
 };
 

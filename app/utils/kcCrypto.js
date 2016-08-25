@@ -167,7 +167,6 @@ export function kcDecrypt(key, iv, data) {
     data.buffer //ArrayBuffer of data you want to encrypt
   )
   .then (function(decrypted) {
-    console.log("we've decrypted to:", new Uint8Array(decrypted));
     return decrypted
   })
 }
@@ -187,7 +186,7 @@ export function decryptSerializedToString(key, serialized) {
   })
 }
 
-// a pbkdf2 hash of a passphrase
+// a pbkdf2 hash of a passphrase ... not used at present
 function deriveBits(code, salt, iterations) {
   // Convert string to a TypedArray.
   let bytes = new TextEncoder("utf-8").encode(code);
