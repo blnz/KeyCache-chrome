@@ -9,7 +9,7 @@ const actionsMap = {
     const { clear, encrypted, id } = action.cardData
     return [{
       id,
-      version: 0,
+      version: "1984-01-01T00:00:00.123",
       clear,
       encrypted 
     }, ...state];
