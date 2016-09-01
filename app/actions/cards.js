@@ -1,5 +1,6 @@
 const bluebird = require('bluebird');
 global.Promise = bluebird;
+import 'isomorphic-fetch'
 
 import * as types from '../constants/ActionTypes';
 import { wrappedKey,
@@ -16,13 +17,13 @@ export function deleteCardData(cardData) {
 }
 
 export function deleteCard(cardData) {
-      
-      chrome.runtime.sendMessage({from: "app",
-                                  subject: "cardDelete",
-                                  cardData: cardData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
-      
+  
+  chrome.runtime.sendMessage({from: "app",
+                              subject: "cardDelete",
+                              cardData: cardData }, function (resp) {
+                                console.log("got response", resp)
+                              })
+  
 }
 
 export function updateCardData(cardData) {
@@ -56,7 +57,6 @@ export function addCard(cardData) {
   }
 }
 
-
 // updated, we encrypt the data for storage, and keep the clear
 // data for usage, for now
 export function updateCard(card) {
@@ -72,7 +72,8 @@ export function updateCard(card) {
         id: card.id,
         version: -1,
         clear: card.clear,
-        encrypted }
+        encrypted
+      }
       
       chrome.runtime.sendMessage({from: "app",
                                   subject: "cardUpdate",
@@ -108,15 +109,15 @@ export function registerUser(userData) {
       chrome.runtime.sendMessage({from: "app",
                                   subject: "registration",
                                   user: newUserData }, function(response) {
-        console.log("got response", response);
-      });
+                                    console.log("got response", response);
+                                  });
       
       return  dispatch(registerUserData(newUserData))
     }).catch( err => {
       console.log("caught:", err)
     })
 
-    keyPromise.catch(function(err) {console.log("Something went wrong: " + err.message);});
+      keyPromise.catch(function(err) {console.log("Something went wrong: " + err.message);});
   };
 }
 
@@ -138,8 +139,8 @@ export function authenticateUser(userAuthData) {
       chrome.runtime.sendMessage({from: "app",
                                   subject: "authentication",
                                   userAuthData }, function(response) {
-        console.log("got response", response);
-      });
+                                    console.log("got response", response);
+                                  });
       dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
     }).then( () => {
 
