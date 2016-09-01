@@ -38,7 +38,7 @@ export function wrappedKey(password, wrappable) {
       return window.crypto.subtle.deriveKey(
         {
           "name": "PBKDF2",
-          "salt": salt.buffer, // stringToArrayBuffer(salt),
+          "salt": salt.buffer, 
           "iterations": iterations,
           "hash": hash
         },
@@ -49,7 +49,7 @@ export function wrappedKey(password, wrappable) {
       );
     }).then( (derivedWrappingKey) => {
       return window.crypto.subtle.wrapKey(
-        "jwk",      //can be "jwk", "raw", "spki", or "pkcs8"
+        "jwk",      
         wrappable,  
         derivedWrappingKey,  //the AES-CBC key with "wrapKey" usage flag
         {   name: "AES-CBC", iv: iv }
