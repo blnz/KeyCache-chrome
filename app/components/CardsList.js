@@ -5,7 +5,21 @@ import {List, ListItem} from 'material-ui/List';
 import CardCreateDialog from './CardCreateDialog';
 import CardViewDialog from './CardViewDialog';
 import TextField from 'material-ui/TextField';
-    
+import Divider from 'material-ui/Divider';
+
+const searchStyle = {
+  fontSize: "16px",
+  lineHeight: "24px",
+  width: "90%",
+  height: "72px",
+  display: "inline-block",
+  position: "relative",
+  marginLeft: "40px",
+  fontFamily: "Roboto, sans-serif",
+  transition: "height 200ms cubic-bezier(0.23, 1, 0.32, 1) 0ms",
+  backgroundColor: "transparent",
+}
+
 const searchFilter = (str) => {
   return card => {
     return card.clear.name.includes(str)
@@ -21,6 +35,7 @@ export default class CardsList extends Component {
 
   state = {
     activeCard: false,
+    search: false
   }
   
   handleCreate = card => {
@@ -47,27 +62,36 @@ export default class CardsList extends Component {
                   })
   }
 
+  handleViewCancel = () => {
+    this.setState({ activeCard: false })
+  }
+  
   cardListItem = card => {
     if (card.clear && card.clear.name) {
       console.log("card", card)
       
       
       return (
+        <div  key={card.id}>
           <ListItem primaryText={card.clear.name}
         secondaryText={card.clear.url ? card.clear.url : undefined}
         onTouchTap={ (e) => { this.handleCardOpen(card) } }
-        key={card.id}/>
+       />
+          <Divider />
+          </div>
       );
     }
   }
   
   render() {
+    console.log("render with props and state", this.props, this.state)
     var viewDialog
     if (this.state.activeCard) {
       viewDialog = (
           <CardViewDialog
         card={this.state.activeCard}
         onEdit={this.handleCardSave}
+        onClose={this.handleViewCancel}
         onDelete={this.handleCardDelete}
         onSave={this.handleCardSave} />
       )
@@ -86,9 +110,11 @@ export default class CardsList extends Component {
     
     return (
         <div>
-        <TextField
+        <TextField style={searchStyle}
       floatingLabelText="search"
-      onChange={ e => { this.setState( {search: e.target.value} );} }
+      onChange={ e => {
+        console.log(this.state)
+        this.setState( {search: e.target.value} );} }
       id="username"
         />
         

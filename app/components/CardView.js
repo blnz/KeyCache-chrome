@@ -7,6 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import Divider from 'material-ui/Divider';
 
 import FontIcon from 'material-ui/FontIcon';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
@@ -14,6 +15,12 @@ import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 const iconStyles = {
   margin: 20,
 };
+
+const miniIconStyles = {
+  width: 36,
+  height: 36,
+  padding: "0px",
+}
 
 
 /**
@@ -62,7 +69,7 @@ export default class CardView extends React.Component {
   }
 
   handleGeneratePassword = () => {
-    
+    // coming real soon, now
   }
 
   handleCopy = () => {
@@ -100,17 +107,20 @@ export default class CardView extends React.Component {
 
     const copyField = (value) => {
       return(
-          <IconButton  style={iconStyles} tooltip="copy">
+          <div style={{display: "inline-block" }}>
+          <IconButton  style={miniIconStyles} tooltip="copy">
           <CopyToClipboard text={value}>
           <FontIcon className="material-icons">content_copy</FontIcon>
           </CopyToClipboard>
           </IconButton>
+          </div>
       )
     }
       
     const usernameField = () => {
       return (
           <div>
+          {copyField(clear.username)}
           <TextField
         hintText="jane@example.com"
         floatingLabelText="Username"
@@ -120,7 +130,7 @@ export default class CardView extends React.Component {
                          this.setState({clear});} }
         id="username"
           />
-          <div style={{display: "inline-block" }}>{copyField(clear.username)}</div>
+
           </div>
       )
     }
@@ -141,6 +151,7 @@ export default class CardView extends React.Component {
       
       return (
           <div>
+          {copyField(clear.password)}
           <TextField
         hintText="Password Field"
         floatingLabelText="Password"
@@ -151,7 +162,6 @@ export default class CardView extends React.Component {
                          this.setState({clear});} }
         id="password"
           />
-          <div style={{display: "inline-block" }}>{copyField(clear.password)}</div>
           <div style={{display: "inline-block" }}>{hideShow}</div>
           </div>
       )

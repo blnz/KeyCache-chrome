@@ -9,6 +9,7 @@ export default class CardViewDialog extends React.Component {
     onSave:  PropTypes.func.isRequired,
     onDelete:  PropTypes.func.isRequired,
     onEdit:  PropTypes.func.isRequired,
+    onClose:  PropTypes.func.isRequired,
     card: PropTypes.object.isRequired
   };
   
@@ -19,7 +20,6 @@ export default class CardViewDialog extends React.Component {
   };
   
   componentWillReceiveProps = (props) => {
-    console.log("got props:", props)
     this.setState({open: true,
                    card: props.card });
   }
@@ -45,12 +45,13 @@ export default class CardViewDialog extends React.Component {
   handleClose = () => {
     this.setState({open: false,
                    viewMode: "view",
-                   card: {}});
+                   card: {}})
+    this.props.onClose()
   };
 
   handleSubmit = (card) => {
-    this.setState({open: false});
-    this.props.onSave(card);
+    this.setState({open: false})
+    this.props.onSave(card)
   };
 
   render() {
