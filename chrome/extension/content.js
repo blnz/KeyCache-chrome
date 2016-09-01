@@ -12,7 +12,7 @@ function getLoginForm() {
 
   var login_forms = [];
 
-  var login_keywords_arr = ["signin", "sign_in", "login", "log_in"];
+  var login_keywords_arr = ["signin", "sign_in", "login", "log_in", "username"];
 
   for (var i = 0; i < forms.length; i++) {
     var username_field;
@@ -20,11 +20,13 @@ function getLoginForm() {
     var possess_login_keyword = false;
 
     var password_fields = getInputsByType(forms[i], 'password');
+
     var email_fields    = getInputsByType(forms[i], 'email');
     var text_fields     = getInputsByType(forms[i], 'text');
 
     var password_field_count = password_fields.length;
 
+    
     var username_field_count = function(){
       if(email_fields.length > 0){
         return email_fields.length;
@@ -46,21 +48,22 @@ function getLoginForm() {
     }
 
     for(var j=0; j<login_keywords_arr.length; j++){
-      var regex = new RegExp(login_keywords_arr[j]);
+      var regex = new RegExp(login_keywords_arr[j], 'i');
 
       var matches = regex.exec(forms[i].className) ||
           regex.exec(forms[i].name)      ||
           regex.exec(forms[i].id)        ||
           regex.exec(forms[i].action);
 
-      if(matches && matches.length > 0){
+      
+      if (matches && matches.length > 0){
         possess_login_keyword = true; break;
-      } else {
+      } else  {
         possess_login_keyword = false;
       }
     }
 
-    if (username_field_count == 1 && password_field_count == 1) {
+    if (username_field_count > 0 && password_field_count == 1) {
       login_forms.push({'username_field': username_field, 'password_field': password_field, 'possess_login_keyword': possess_login_keyword});
     }
   }
@@ -79,7 +82,7 @@ function getLoginForm() {
       return result;
     }(login_forms);
   }
-
+  
   // Get the forms only containing login keywords
   if (login_forms.length > 1){
     login_forms = function(forms) {
@@ -134,7 +137,6 @@ function getInputsByType(node, type){
 
   return typeInputs;
 }
-
 
 
 /**
