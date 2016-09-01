@@ -58,4 +58,4 @@ chrome.runtime.onMessage.addListener(
 ReactDOM.render(
     <Root store={ store } />,
   document.querySelector('#root')
-);
+)
