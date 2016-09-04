@@ -23,9 +23,11 @@ export const saveState = (state) => {
   try {
 
     const cards = encryptedCards(state.cards)
-    const savable = { user: state.user, cards }
+    const { settings } = state
+    const savable = { user: state.user, cards, settings }
     const serializedState = JSON.stringify(savable);
 
+    // optimize later. for now, stored locally as one big chunk
     localStorage.setItem('state', serializedState);
 
   } catch (err) {

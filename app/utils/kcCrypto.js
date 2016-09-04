@@ -187,23 +187,25 @@ export function decryptSerializedToString(key, serialized) {
 }
 
 // a pbkdf2 hash of a passphrase ... not used at present
-function deriveBits(code, salt, iterations) {
+export function deriveBits(code, salt, iterations) {
   // Convert string to a TypedArray.
   let bytes = new TextEncoder("utf-8").encode(code);
-
+  let saltArray = new TextEncoder("utf-8").encode(salt);
+  
   // Create the base key to derive from.
   let importedKey = crypto.subtle.importKey(
     "raw", bytes, "PBKDF2", false, ["deriveBits"]);
-
+  
   return importedKey.then(key => {
-
+    
     // All required PBKDF2 parameters.
-    let params = {name: "PBKDF2", hash: "SHA-1", salt, iterations};
-
+    let params = {name: "PBKDF2", hash: "SHA-1", salt: saltArray, iterations};
+    
     // Derive 160 bits using PBKDF2.
-    return crypto.subtle.deriveBits(params, key, 160);
-  });
+    return crypto.subtle.deriveBits(params, key, 160)
+  })
 }
+
 
 // unit test ... creates a new symmetric key,
 // then encrypts some text with that key

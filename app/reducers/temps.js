@@ -20,11 +20,32 @@ const actionsMap = {
     return Object.assign({}, state, { masterKey, user });
   },
 
+  [ActionTypes.SESSION_OPEN_SUCCESS](state, action) {
+    console.log("SESSION_OPEN_SUCCESS", action)
+    const { session } = action.response
+    const user = Object.assign({}, state.user, { session })
+    return Object.assign({}, state, { user });
+  },
+
+  [ActionTypes.SESSION_CLOSE_SUCCESS](state, action) {
+    console.log("SESSION_OPEN_SUCCESS", action)
+    const session = undefined
+    const user = Object.assign({}, state.user, { session })
+    return Object.assign({}, state, { user });
+  },
+
+  [ActionTypes.USER_REGISTER_SUCCESS](state, action) {
+    console.log("USER_REGISTER_SUCCESS", action)
+    const session = undefined
+    const user = Object.assign({}, state.user, { session })
+    return Object.assign({}, state, { user });
+  },
+
   [ActionTypes.DELETE_ALL](state, action) {
     return {};
   },
 
-  [ActionTypes.REGISTER_USER](state, action) {
+  [ActionTypes.USER_REGISTER](state, action) {
     const { username, passphrase, wrappedKey } = action.userData
     return Object.assign({}, state, { user: { username, passphrase, wrappedKey } });
   }

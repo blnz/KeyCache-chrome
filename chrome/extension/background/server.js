@@ -3,6 +3,7 @@ import { loadState, saveState }  from '../../../app/utils/localStorage';
 
 import { wrappedKey,
          unWrappedKey,
+         deriveBits,
          encryptStringToSerialized,
          decryptSerializedToString } from '../../../app/utils/kcCrypto';
 
@@ -43,11 +44,13 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   if ((msg.from === 'app') && (msg.subject === 'registration')) {
     console.log("registration", msg)
     store.dispatch(myActions.registerUserData(msg.user))
+    store.dispatch(myActions.registerUserRemote(msg.user))
     chrome.runtime.sendMessage({from: "background",
                                 subject: "registration",
                                 user: msg.user }, function (resp) {
                                   console.log("got response", resp)
                                 })
+    
     store.dispatch(myActions.bgAuthenticateUser(msg.user))
     // forward to any popup that's listening
     chrome.runtime.sendMessage({from: "background",

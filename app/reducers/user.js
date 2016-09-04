@@ -10,11 +10,19 @@ const actionsMap = {
     return {}
   },
 
-  [ActionTypes.REGISTER_USER](state, action) {
+  [ActionTypes.USER_REGISTER](state, action) {
     const {username, wrappedKey} = action.userData
     const returnable = Object.assign({}, state, {username,  wrappedKey} );
     return returnable
-  }
+  },
+  
+  [ActionTypes.USER_REGISTER_SUCCESS](state, action) {
+    console.log("USER_REGISTER_SUCCESS", action)
+    const { user_id } = action.response
+    return Object.assign({}, state, { user_id });
+  },
+
+
 };
 
 export default function user(state = initialState, action) {

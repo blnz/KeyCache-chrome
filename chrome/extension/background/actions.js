@@ -85,7 +85,7 @@ export function registerUser(userData) {
 
 export function registerUserData(userData) {
   console.log("registerUSerData with:", userData)
-  return { type: types.REGISTER_USER, userData };
+  return { type: types.USER_REGISTER, userData };
 }
 
 // given user's secret, use it to open masterKey, then decrypt stuff 

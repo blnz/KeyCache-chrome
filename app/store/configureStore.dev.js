@@ -1,10 +1,11 @@
 import { applyMiddleware, createStore, compose } from 'redux';
 import rootReducer from '../reducers';
+import api from '../middleware/api'
 import thunk from 'redux-thunk';
 import storage from '../utils/storage';
 
 const enhancer = compose(
-  applyMiddleware(thunk),
+  applyMiddleware(thunk, api),
   storage(),
   window.devToolsExtension ? window.devToolsExtension() : nope => nope
 );

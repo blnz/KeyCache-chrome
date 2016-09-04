@@ -2,9 +2,12 @@ const bluebird = require('bluebird');
 global.Promise = bluebird;
 import 'isomorphic-fetch'
 
-import * as types from '../constants/ActionTypes';
+import * as types from '../constants/ActionTypes'
+import { CALL_API } from '../middleware/api'
+
 import { wrappedKey,
          unWrappedKey,
+         deriveBits,
          encryptStringToSerialized,
          decryptSerializedToString } from '../utils/kcCrypto';
 
@@ -39,8 +42,7 @@ export function addCard(cardData) {
     const clear = JSON.stringify(cardData)
     
     encryptStringToSerialized(key, clear).then( encrypted => {
-      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
-      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
+
       const newCard = {
         id: require('node-uuid').v4(),
         clear: cardData,
@@ -52,7 +54,7 @@ export function addCard(cardData) {
                                     console.log("got response", resp)
                                   })
       
-      // return dispatch(addCardData( newCard ))
+
     })
   }
 }
@@ -66,7 +68,6 @@ export function updateCard(card) {
     const clear = JSON.stringify(card.clear)
 
     encryptStringToSerialized(key, clear).then( encrypted => {
-      //      console.log("gonna add CardData ", { clear: cardData, encrypted })
 
       const updatedCard = {
         id: card.id,
@@ -82,7 +83,6 @@ export function updateCard(card) {
                                   })
 
       // we'll get the data back from background server && do the insert then
-      // return dispatch(updateCardData( updatedCard ))
 
     })
   }
@@ -100,11 +100,10 @@ export function registerUser(userData) {
     );
     
     keyPromise.then( masterKey => {
-      //      console.log("proceeding with new MasterKey:", masterKey)
       dispatch(setClearMasterKey(masterKey))
       return wrappedKey(userData.passphrase, masterKey)
     }).then (function(wrappedKey) {
-      //      console.log("got wrapped and serialized masterkey", wrapped)
+
       const newUserData = Object.assign({}, userData, { wrappedKey })
       chrome.runtime.sendMessage({from: "app",
                                   subject: "registration",
@@ -123,27 +122,27 @@ export function registerUser(userData) {
 
 export function registerUserData(userData) {
   console.log("registerUSerData with:", userData)
-  return { type: types.REGISTER_USER, userData };
+  return { type: types.USER_REGISTER, userData };
 }
 
 // given user's secret, use it to open masterKey, then decrypt stuff 
 export function authenticateUser(userAuthData) {
   return function (dispatch, getState) {
-    // console.log("authenticateUser on dispatch userData:", userData);
-    // console.log("authenticateUser on dispatch getState() returns:", getState());
+
     const { wrappedKey } = getState().user
     const { passphrase } = userAuthData
     
     return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
-      console.log("got unwrapped master, send to background", masterKey);
+
       chrome.runtime.sendMessage({from: "app",
                                   subject: "authentication",
                                   userAuthData }, function(response) {
-                                    console.log("got response", response);
+                                  //  console.log("got response", response);
                                   });
       dispatch( { type: types.SET_CLEAR_MASTERKEY, masterKey } )
     }).then( () => {
 
+      // decrypt all the cards
       const key = getState().temps.masterKey
       const cards = getState().cards
       cards.map( (card) => {
@@ -239,3 +238,248 @@ export function deleteAll() {
   return wipeAllData()
 }
 
+
+
+
+const postEndpoint = (body, state, route, session) => {
+  const host = state.settings.syncServerHost
+  return ({
+    url: session ? `${host}/api/${route}?session=${session}` : `${host}/api/${route}`,
+    opts: {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+  })
+}
+
+const putEndpoint = (body, state, route, session) => {
+  const host = state.settings.syncServerHost
+  return ({
+    url: session ? `${host}/api/${route}?session=${session}` : `${host}/api/${route}`,
+    opts: {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }
+  })
+}
+
+const deleteEndpoint = (state, route, session) => {
+  const host = state.settings.syncServerHost
+  return ({
+    url: session ? `${host}/api/${route}?session=${session}` : `${host}/api/${route}`,
+    opts: {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json'
+      }
+    }
+  })
+}
+
+const getEndpoint = (state, route, session) => {
+  const host = state.settings.syncServerHost
+  return ({
+    url: session ? `${host}/api/${route}?session=${session}` : `${host}/api/${route}`,
+    opts: {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    }
+  })
+}
+
+
+const registerUserCallAPI = (user) => {
+  return {
+    [CALL_API]: {
+      types: [ types.USER_REGISTER_REQUEST, types.USER_REGISTER_SUCCESS, types.USER_REGISTER_FAILURE ],
+      endpoint: ( state ) => postEndpoint(user, state, "register")
+    }
+  }
+}
+
+export function registerUserRemote(user) {
+
+  return function (dispatch, getState) {
+    deriveBits(user.passphrase, 'sample-salt', 100000).then( bits => {
+      var userReq = { secret: bits.toString('hex'),
+                      username: user.username,
+                      wrapped_master: user.wrappedKey
+                    }
+      dispatch(registerUserCallAPI(userReq))
+    })
+  }
+}
+
+// use middleware fetcher, just name some reducers
+export function sessionOpenRemote(user) {
+  console.log("sessionOpenRemote building a CALL_API action for user:", user)
+  return function (dispatch, getState) {
+    deriveBits(user.passphrase, 'sample-salt', 100000).then( bits => {
+      
+      let userReq = { secret: bits.toString('hex'),
+                      username: user.username
+                    }
+      let endpoint = (state) => postEndpoint(userReq, state, "authenticate")
+      
+      dispatch( () => {
+        return {
+          [CALL_API]: {
+            types: [ types.SESSION_OPEN_REQUEST, types.SESSION_OPEN_SUCCESS, types.SESSION_OPEN_FAILURE ],
+            endpoint
+          }
+        }
+      })
+    })
+  }
+}
+
+// use middleware fetcher, just name some reducers
+export function sessionCloseRemote(user) {
+  console.log("sessionCloseRemote building a CALL_API action for user:", user)
+  return {
+    [CALL_API]: {
+      types: [ types.SESSION_CLOSE_REQUEST, types.SESSION_CLOSE_SUCCESS, types.SESSION_CLOSE_FAILURE ],
+      endpoint: (state) =>  {
+        return postEndpoint({}, state, "logout", state.temps.user.session)
+      }
+    }
+  }
+}
+
+export function secretChangeRemote(user) {
+  console.log("secretChangeRemote building a CALL_API action for user:", user)
+  return function (dispatch, getState) {
+    deriveBits(user.passphrase, 'sample-salt', 100000).then( bits => {
+      
+      let userReq = { secret: bits.toString('hex'),
+                      username: user.username,
+                      wrapped_master: user.wrappedKey
+                    }
+      let endpoint = (state) => postEndpoint(userReq, state, "changeSecret",
+                                             state.temps.user.session)
+      
+      dispatch( () => {
+        return {
+          [CALL_API]: {
+            types: [ types.SECRET_CHANGE_REQUEST, types.SECRET_CHANGE_SUCCESS, types.SECRET_CHANGE_FAILURE ],
+            endpoint
+          }
+        }
+      })
+    })
+  }
+}
+
+export function cardAddRemote(user, card) {
+  console.log("cardAddRemote building a CALL_API action for card:", card)
+  let cardReq = { encrypted: card.encrypted,
+                  id: card.id
+                }
+
+  let endpoint = (state) => putEndpoint(cardReq, state, `u/${user.user_id}/c/{card.id}`,
+                                        state.temps.user.session)
+  
+  return {
+    [CALL_API]: {
+      types: [ types.CARD_ADD_REQUEST, types.CARD_ADD_SUCCESS, types.CARD_ADD_FAILURE ],
+      endpoint
+    }
+  }
+}
+
+export function cardUpdateRemote(user, card) {
+  console.log("cardAddRemote building a CALL_API action for user,card:", user, card)
+  let cardReq = { encrypted: card.encrypted,
+                  id: card.id,
+                  version: card.version
+                }
+
+  let endpoint = (state) => postEndpoint(cardReq, state, `u/${user.user_id}/c/${card.id}`,
+                                         state.temps.user.session)
+  
+  return {
+    [CALL_API]: {
+      types: [ types.CARD_UPDATE_REQUEST, types.CARD_UPDATE_SUCCESS, types.CARD_UPDATE_FAILURE ],
+      endpoint
+    }
+  }
+}
+
+
+export function cardDeleteRemote(user, card) {
+  console.log("cardDeleteRemote building a CALL_API action for user:", user, card)
+
+  let endpoint = (state) => deleteEndpoint(state, `u/${user.user_id}/c/${card.id}`,
+                                           state.temps.user.session)
+  
+  return {
+    [CALL_API]: {
+      types: [ types.CARD_DELETE_REQUEST, types.CARD_DELETE_SUCCESS, types.CARD_DELETE_FAILURE ],
+      endpoint
+    }
+  }
+}
+
+export function cardFetchRemote(user) {
+  console.log("cardFetchRemote building a CALL_API action for user:", user)
+  
+  let endpoint = (state) => getEndpoint(state, `u/${user.user_id}/c/${card.id}`,
+                                        state.temps.user.session)
+  
+  return {
+    [CALL_API]: {
+      types: [ types.CARD_FETCH_REQUEST, types.CARD_FETCH_SUCCESS, types.CARD_FETCH_FAILURE ],
+      endpoint
+    }
+  }
+}
+
+export function cardsListRemote(user, since) {
+  console.log("cardsListRemote building a CALL_API action for user:", user)
+
+  if (since) {
+    console.log("hey", since)
+  }
+
+  let endpoint = (state) => getEndpoint(state, `u/${user.user_id}/c/`,
+                                        state.temps.user.session)
+  
+
+  return {
+    [CALL_API]: {
+      types: [ types.CARDS_LIST_REQUEST, types.CARDS_LIST_SUCCESS, types.CARDS_LIST_FAILURE ],
+      endpoint
+    }
+  }
+}
+
+
+export function wkeyFetchRemote(user) {
+  console.log("registerUserRemote building a CALL_API action for user:", user)
+  return {
+    [CALL_API]: {
+      types: [ types.WKEY_FETCH_REQUEST, types.WKEY_FETCH_SUCCESS, types.WKEY_FETCH_FAILURE ],
+      endpoint: {
+        url: "http://localhost:8000/api/register",
+        opts: {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(user)
+        }
+      }
+    }
+  }
+}

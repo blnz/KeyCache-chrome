@@ -108,7 +108,7 @@ export default class CardView extends React.Component {
     const copyField = (value) => {
       return(
           <div style={{display: "inline-block" }}>
-          <IconButton  style={miniIconStyles} tooltip="copy">
+          <IconButton  style={miniIconStyles} tooltip="copy" tabIndex="-1">
           <CopyToClipboard text={value}>
           <FontIcon className="material-icons">content_copy</FontIcon>
           </CopyToClipboard>
@@ -138,12 +138,12 @@ export default class CardView extends React.Component {
     const passwordField = () => {
       const hideShow = this.state.showPassword ?
             (
-                <IconButton  style={iconStyles} tooltip="hide"
+                <IconButton  style={iconStyles} tooltip="hide" tabIndex="-1"
               onTouchTap={this.handleHidePassword}>
                 <FontIcon className="material-icons">visibility_off</FontIcon>
                 </IconButton>
             ) : (
-                <IconButton  style={iconStyles} tooltip="show"
+                <IconButton  style={iconStyles} tooltip="show" tabIndex="-1"
               onTouchTap={this.handleShowPassword}>
                 <FontIcon className="material-icons">visibility</FontIcon>
                 </IconButton>

@@ -3,6 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import IconButton from 'material-ui/IconButton';
 
 /**
  * Dialog for registering a new account
@@ -15,11 +16,13 @@ export default class Registration extends React.Component {
 
   state = {
     open: false,
+    mismatch: false,
     userData: {}
   };
 
   handleOpen = () => {
     this.setState({open: true,
+                   mismatch: false,
                    userData : {}});
   };
 
@@ -28,8 +31,12 @@ export default class Registration extends React.Component {
   };
 
   handleSubmit = () => {
-    this.setState({open: false});
-    this.props.onSave(this.state.userData);
+    if (this.state.userData.passphrase === this.state.userData.passphrase2) { 
+      this.setState({open: false});
+      this.props.onSave(this.state.userData);
+    } else {
+      this.setState( {mismatch: true} )
+    }
   };
 
   render() {
@@ -47,6 +54,14 @@ export default class Registration extends React.Component {
         onTouchTap={this.handleSubmit}
       />,
     ];
+
+    const mismatchAlert = () => {
+      if (this.state.mismatch) {
+        return (
+            <p>mismatch</p>
+        )
+      }
+    }
 
     return (
         <div>
@@ -74,9 +89,9 @@ export default class Registration extends React.Component {
         />
         <br />
         <TextField
+      style={{ width: "90%"}}
       hintText="Pass Phrase"
       floatingLabelText="Pass Phrase"
-      type="password"
       onChange={ e => {
         var userData = Object.assign({}, this.state.userData, {passphrase: e.target.value});
         this.setState({userData}); } }
@@ -85,8 +100,9 @@ export default class Registration extends React.Component {
         <br />
         <TextField
       hintText="Pass Phrase"
+      style={{ width: "90%"}}
       floatingLabelText="Confirm Pass Phrase"
-      type="password"
+      errorText={this.state.mismatch && "pass phrases don't match"}
       onChange={ e => {
         var userData = Object.assign({}, this.state.userData, {passphrase2: e.target.value});
         this.setState({userData});}
