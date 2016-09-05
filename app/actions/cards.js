@@ -11,6 +11,10 @@ import { wrappedKey,
          encryptStringToSerialized,
          decryptSerializedToString } from '../utils/kcCrypto';
 
+
+export function useSyncServerToggle() {
+  return { type: types.USE_SYNC_SERVER_TOGGLE };
+}
 export function addCardData(cardData) {
   return { type: types.ADD_CARD, cardData };
 }
@@ -20,7 +24,6 @@ export function deleteCardData(cardData) {
 }
 
 export function deleteCard(cardData) {
-  
   chrome.runtime.sendMessage({from: "app",
                               subject: "cardDelete",
                               cardData: cardData }, function (resp) {
