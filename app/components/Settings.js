@@ -28,10 +28,16 @@ export default class Settings extends React.Component {
       id="syncServer"
       defaultValue={this.props.settings.syncServerHost}
       floatingLabelText="Syncronization Server"
+      onKeyDown={ (event) => {
+        if (event.keyCode == 13) {
+          this.props.actions.setSyncServerHost(event.target.value)
+        }
+      }
+                }
       floatingLabelFixed={true}
     /><br />
     <Toggle
-      label="Sync with Cloud"
+      label="Allow syncing with cloud"
       toggled={this.props.settings.useSyncServer}
       onToggle={this.props.actions.useSyncServerToggle}
     />

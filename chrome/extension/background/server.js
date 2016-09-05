@@ -121,11 +121,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     
     if (msg.subject === 'setSyncServerHost') {
 
-      store.dispatch(myActions.setSyncServerHost(msg.host))
+      store.dispatch(myActions.setSyncServerHostData(msg.syncServerHost))
       // forward to any popup that's listening
       chrome.runtime.sendMessage({from: "background",
                                   subject: "setSyncServerHost",
-                                  host: msg.host},
+                                  syncServerHost: msg.syncServerHost},
                                  function (resp) {
                                    console.log("got response", resp)
                                  })

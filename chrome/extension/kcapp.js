@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener(
       } else if (msg.subject === "useSyncServerToggle") {
         store.dispatch(actions.useSyncServerToggleData())
       } else if (msg.subject === "setSyncServerHost") {
-        store.dispatch(actions.setSyncServerHost(msg.host))
+        store.dispatch(actions.setSyncServerHostData(msg.syncServerHost))
       }
     }
   });

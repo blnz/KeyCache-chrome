@@ -26,6 +26,7 @@ export function setSyncServerHostData(host) {
            syncServerHost: host};
 }
 
+
 export function setSyncServerHost(host) {
   chrome.runtime.sendMessage({from: "app",
                               subject: "setSyncServerHost",
