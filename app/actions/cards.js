@@ -12,9 +12,26 @@ import { wrappedKey,
          decryptSerializedToString } from '../utils/kcCrypto';
 
 
-export function useSyncServerToggle() {
+export function useSyncServerToggleData() {
   return { type: types.USE_SYNC_SERVER_TOGGLE };
 }
+
+export function useSyncServerToggle() {
+  chrome.runtime.sendMessage({from: "app",
+                              subject: "useSyncServerToggle"})
+}  
+
+export function setSyncServerHostData(host) {
+  return { type: types.SERVER_HOST_SET,
+           syncServerHost: host};
+}
+
+export function setSyncServerHost(host) {
+  chrome.runtime.sendMessage({from: "app",
+                              subject: "setSyncServerHost",
+                              syncServerHost: host})
+}  
+
 export function addCardData(cardData) {
   return { type: types.ADD_CARD, cardData };
 }

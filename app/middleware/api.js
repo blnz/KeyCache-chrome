@@ -45,7 +45,8 @@ export default store => next => action => {
   // the action contains an object bound to the CALL_API token
   const callAPI = action[CALL_API]
 
-  if (typeof callAPI === 'undefined') {
+  if (typeof callAPI === 'undefined' || !store.getState().settings.useSyncServer) {
+    // no-op if we're set for offline
     return next(action)
   }
 

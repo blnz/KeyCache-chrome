@@ -5,12 +5,11 @@ import createStore from '../../app/store/configureStore';
 
 import * as actions from '../../app/actions/cards'
 
-// fixme: load initial state from bakground page instead of local storage
+// FIXME: we may prefer to load initial state from bakground page
+//  instead of local storage
 import { loadState }  from '../../app/utils/localStorage';
 
-//
 // Loads the single page app into its HTML doc container
-//
 
 window.React = React;
 
@@ -26,6 +25,7 @@ injectTapEventPlugin();
 const persisted = loadState();
 const store = createStore(persisted);
 
+// check in with the chrome extension's background page to see if we're authenticated
 chrome.runtime.sendMessage({from: "app",
                             subject: "getCredentials"} , function (resp) {
                               if (resp.from === "background" &&
@@ -35,13 +35,14 @@ chrome.runtime.sendMessage({from: "app",
                               }
                             })
 
+// recieve updates from the extension's background page
 chrome.runtime.onMessage.addListener(
   function(msg, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
+    //    console.log(sender.tab ?
+    //                "from a content script:" + sender.tab.url :
+    //                "from the extension");
     if (msg.from === 'background') {
-      console.log("got something from background", msg, sender);
+      //      console.log("got something from background", msg, sender);
       if (msg.subject === "authentication") {
         store.dispatch(actions.authenticateUserLocal(msg.userAuthData))
       } else if (msg.subject === "cardUpdate") {
@@ -50,6 +51,10 @@ chrome.runtime.onMessage.addListener(
         store.dispatch(actions.addCardData(msg.cardData))
       } else if (msg.subject === "cardDelete") {
         store.dispatch(actions.deleteCardData(msg.cardData))
+      } else if (msg.subject === "useSyncServerToggle") {
+        store.dispatch(actions.useSyncServerToggleData())
+      } else if (msg.subject === "setSyncServerHost") {
+        store.dispatch(actions.setSyncServerHost(msg.host))
       }
     }
   });
