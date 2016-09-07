@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Router, Route, hashHistory } from 'react-router';
 
 import Header from '../components/Header';
+
 import CardsList from '../components/CardsList';
 import Registration from '../components/Registration';
 import Authentication from '../components/Authentication';
