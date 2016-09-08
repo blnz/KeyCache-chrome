@@ -1,8 +1,8 @@
 {
-  "version": "0.0.0",
-  "name": "KeyCache-chrome",
+  "version": "0.1.0",
+  "name": "KeyCache",
   "manifest_version": 2,
-  "description": "KeyCache via react-chrome-extension",
+  "description": "KeyCache secure password manager chrome-extension",
   "browser_action": {
     "default_title": "KeyCache",
     "default_popup": "popup.html"

@@ -24,31 +24,41 @@ import { connect }            from 'react-redux';
 
 export default class Settings extends React.Component {
   render() {
-    console.log("renering with prps", this.props)
+
+    const syncServer = () => {
+      // disable for published release
+      if (false) {
+        return (
+            <div>
+            <h3>Synchronization</h3>
+            <Toggle
+          label="Allow syncing with cloud"
+          toggled={this.props.settings.useSyncServer}
+          onToggle={this.props.actions.useSyncServerToggle}
+            />
+            
+            <TextField
+          id="syncServer"
+          defaultValue={this.props.settings.syncServerHost}
+          floatingLabelText="Server Host"
+          onKeyDown={ (event) => {
+            if (event.keyCode == 13) {
+              this.props.actions.setSyncServerHost(event.target.value)
+            }
+          }
+                    }
+          floatingLabelFixed={true}
+            /><br />
+            </div>
+        )   
+      }
+      
+    }
+  
     return (
         <div style={{margin: "10px", maxWidth: "300px"}}>
         <h1>Settings</h1>
-        <div>
-        <h3>Synchronization</h3>
-        <Toggle
-      label="Allow syncing with cloud"
-      toggled={this.props.settings.useSyncServer}
-      onToggle={this.props.actions.useSyncServerToggle}
-        />
-        
-        <TextField
-      id="syncServer"
-      defaultValue={this.props.settings.syncServerHost}
-      floatingLabelText="Server Host"
-      onKeyDown={ (event) => {
-        if (event.keyCode == 13) {
-          this.props.actions.setSyncServerHost(event.target.value)
-        }
-      }
-                }
-      floatingLabelFixed={true}
-        /><br />
-        </div>
+
         <Divider />
         <div>
         <h3>Backups and Exports</h3>

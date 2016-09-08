@@ -169,8 +169,11 @@ export default class CardView extends React.Component {
     
     const ViewTitle = () => {
       if (this.props.viewMode === "view") {
-        return ( 
+        return (
+            <div>
+            <h1 style={{ float: "left", margin: "20px"}} >{this.state.clear.name}</h1>
             <div style={vaStyle}>
+            
             <IconButton  style={iconStyles} tooltip="edit"   onTouchTap={this.handleEdit}>
             <FontIcon className="material-icons">create</FontIcon>
             </IconButton>
@@ -180,6 +183,7 @@ export default class CardView extends React.Component {
             <IconButton   style={iconStyles} tooltip="close" onTouchTap={this.handleCancel}>
             <FontIcon className="material-icons">clear</FontIcon>
             </IconButton>
+            </div>
             </div>
           );
       } else {
@@ -225,7 +229,6 @@ export default class CardView extends React.Component {
         { passwordField() }
       <br />
       <TextField
-      hintText="MultiLine with rows: 2 and rowsMax: 4"
       multiLine={true}
       floatingLabelText="Notes"
       disabled={disabled}
