@@ -14,13 +14,14 @@ import {red500, yellow500, blue500} from 'material-ui/styles/colors';
 import randomString from '../utils/simplePassword'
 
 const iconStyles = {
-  margin: 20,
+  margin: "15px",
 };
 
 const miniIconStyles = {
   width: 36,
   height: 36,
   padding: "0px",
+  margin: "6px"
 }
 
 
@@ -142,12 +143,12 @@ export default class CardView extends React.Component {
     const passwordField = () => {
       const hideShow = this.state.showPassword ?
             (
-                <IconButton  style={iconStyles} tooltip="hide" tabIndex="-1"
+                <IconButton  style={miniIconStyles} tooltip="hide" tabIndex="-1"
               onTouchTap={this.handleHidePassword}>
                 <FontIcon className="material-icons">visibility_off</FontIcon>
                 </IconButton>
             ) : (
-                <IconButton  style={iconStyles} tooltip="show" tabIndex="-1"
+                <IconButton  style={miniIconStyles} tooltip="show" tabIndex="-1"
               onTouchTap={this.handleShowPassword}>
                 <FontIcon className="material-icons">visibility</FontIcon>
                 </IconButton>
@@ -156,7 +157,7 @@ export default class CardView extends React.Component {
       const generatePassword =
             this.props.viewMode != "view" ?
             (
-                <IconButton  style={iconStyles} tooltip="generate" tabIndex="-1"
+                <IconButton  style={miniIconStyles} tooltip="generate" tabIndex="-1"
               onTouchTap={this.handleGeneratePassword}>
                 <FontIcon className="material-icons">autorenew</FontIcon>
                 </IconButton>
@@ -168,6 +169,7 @@ export default class CardView extends React.Component {
           <div>
           {copyField(clear.password)}
           <TextField
+        style={{width: "50%"}}
         hintText="Password Field"
         floatingLabelText="Password"
         type={this.state.showPassword ? "text" : "password"}
@@ -223,7 +225,8 @@ export default class CardView extends React.Component {
               onRequestClose={this.handleCancel}
               autoScrollBodyContent={true}
               >
-      <TextField
+        <TextField
+      style={{width: "90%"}}
       hintText="Card name"
       floatingLabelText="Name"
       disabled={disabled}
@@ -232,7 +235,8 @@ export default class CardView extends React.Component {
                        this.setState({ clear });} }
       id="name"
       /><br />
-      <TextField
+        <TextField
+      style={{width: "90%"}}
       hintText="www.example.com"
       floatingLabelText="URL"
       disabled={disabled}
@@ -245,7 +249,8 @@ export default class CardView extends React.Component {
         <br />
         { passwordField() }
       <br />
-      <TextField
+        <TextField
+      style={{width: "90%"}}
       multiLine={true}
       floatingLabelText="Notes"
       disabled={disabled}
@@ -253,8 +258,8 @@ export default class CardView extends React.Component {
       onChange={ e => {var clear = Object.assign({}, this.state.clear, {note: e.target.value});
       this.setState({clear});} }
       id="note"
-      rows={2}
-      rowsMax={4}
+      rows={3}
+      rowsMax={8}
       />
       </Dialog>
     );
