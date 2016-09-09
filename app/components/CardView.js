@@ -8,9 +8,10 @@ import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Divider from 'material-ui/Divider';
-
 import FontIcon from 'material-ui/FontIcon';
 import {red500, yellow500, blue500} from 'material-ui/styles/colors';
+
+import randomString from '../utils/simplePassword'
 
 const iconStyles = {
   margin: 20,
@@ -70,6 +71,9 @@ export default class CardView extends React.Component {
 
   handleGeneratePassword = () => {
     // coming real soon, now
+    const generated = randomString(16)
+    const clear = Object.assign({}, this.state.clear, {password: generated});
+    this.setState({clear});
   }
 
   handleCopy = () => {
@@ -148,6 +152,17 @@ export default class CardView extends React.Component {
                 <FontIcon className="material-icons">visibility</FontIcon>
                 </IconButton>
             )
+
+      const generatePassword =
+            this.props.viewMode != "view" ?
+            (
+                <IconButton  style={iconStyles} tooltip="generate" tabIndex="-1"
+              onTouchTap={this.handleGeneratePassword}>
+                <FontIcon className="material-icons">autorenew</FontIcon>
+                </IconButton>
+            ) : (
+              ""
+            )
       
       return (
           <div>
@@ -158,11 +173,13 @@ export default class CardView extends React.Component {
         type={this.state.showPassword ? "text" : "password"}
         disabled={disabled}
         defaultValue={clear.password}
+        value={clear.password}
         onChange={ e => {var clear = Object.assign({}, this.state.clear, {password: e.target.value});
                          this.setState({clear});} }
         id="password"
           />
           <div style={{display: "inline-block" }}>{hideShow}</div>
+          <div style={{display: "inline-block" }}>{generatePassword}</div>
           </div>
       )
     }
