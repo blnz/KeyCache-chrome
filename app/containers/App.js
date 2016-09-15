@@ -54,11 +54,7 @@ const muiTheme = getMuiTheme({
     pickerHeaderColor: cyan500,
     clockCircleColor: fade(darkBlack, 0.07),
     shadowColor: fullBlack,
-  },
-  waspalette: {
-    accent1Color: deepOrange500,
-    
-  },
+  }
 });
 
 
@@ -111,6 +107,12 @@ export default class App extends Component {
       )
     }
 
+    const eraseAllMenuItem = () => {
+      if (process.env.NODE_ENV !== 'production') return (
+          <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
+      )
+    }
+
     const backButton = () => {
       if (this.props.children){
         return (
@@ -136,7 +138,7 @@ export default class App extends Component {
             { logoutMenuItem() }
               
             <MenuItem primaryText="Preferences" onTouchTap={ () => { hashHistory.push("/settings") } }/>
-            <MenuItem primaryText="Erase All Data" onTouchTap={ this.handleWipe }/>
+            { eraseAllMenuItem() }
 	    </IconMenu>
         );
     
