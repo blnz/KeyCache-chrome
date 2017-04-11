@@ -2,15 +2,19 @@ import React from 'react';
 import { Router, Route, hashHistory } from 'react-router';
 import { bindActionCreators } from 'redux';
 
+import FileDrop from './FileDrop';
+
 import * as Actions from '../actions/cards';
 
 import DownloadLink from './DownloadLink';
+
+import FlatButton from 'material-ui/FlatButton';
 
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import Divider from 'material-ui/Divider';
 
-import { connect }            from 'react-redux';
+import { connect } from 'react-redux';
 
 @connect(
   state => ({
@@ -23,6 +27,58 @@ import { connect }            from 'react-redux';
 )
 
 export default class Settings extends React.Component {
+
+  handleWipe = event => {
+    this.props.actions.deleteAll()
+  }
+
+  // ensure files is an array of length 1 and that we can parse the first as JSON
+  getJsonFile = files => {
+    var json = undefined
+    if (! files instanceof Array) {
+      return false;
+    } else if (files.length != 1) {
+      return false;
+    } else {
+      try {
+        console.log(files[0])
+        console.log(files[0].name)
+        console.log(files[0].value)
+        return true
+      } catch (e) {
+        return false;
+      }
+      
+    }
+  }
+  
+  validateCardsImport = files => {
+    return new Promise( function (resolve, reject) {
+      if (! files instanceof Array) {
+        reject("not array");
+      } else if (files.length != 1) {
+        reject("too long");
+      } else {
+
+        var fr = new FileReader();
+        fr.onload = function() {
+          // use fr.result here
+          console.log(fr.result)
+          var data = fr.result.replace(/data:(.*);base64,/i, "");
+          console.log("trimmed result", data)
+          data = window.atob(data);
+          try {
+            data = JSON.parse(data);
+            resolve(data)
+          } catch (ex) {
+            reject(ex)
+          }
+        }
+        fr.readAsDataURL(files[0]);
+      }
+    })
+  }
+
   render() {
 
     const syncServer = () => {
@@ -58,10 +114,11 @@ export default class Settings extends React.Component {
     return (
         <div style={{margin: "10px", maxWidth: "300px"}}>
         <h1>Settings</h1>
-
+        
         <Divider />
         <div>
         <h3>Backups and Exports</h3>
+        <div style={{margin: "10px"}}>
         <DownloadLink
       label="export cards"
       filename="cards.json"
@@ -70,14 +127,31 @@ export default class Settings extends React.Component {
           card => { return { id: card.id, version: card.version, clear: card.clear } }
         ), null, 4)
       } />
+        <br />
+        <FileDrop label="import cards" onSave={ this.props.actions.importCards }
+         validator={ this.validateCardsImport } />
+      
+      </div>
+        <Divider />
+        <div style={{margin: "10px"}}>
         <DownloadLink
-      label="make backup"
+      label="make encrypted backup"
       filename="backup.json"
       exportFile={() =>  localStorage.getItem('state') }
-      />
-        </div>
-        
+        />
+        <FileDrop label="restore from backup" onSave={ this.props.actions.restoreBackup }
+      validator={ this.validateCardsImport } />
       </div>
+        </div>
+        <Divider />
+        <div>
+        <h3>Reset</h3>
+        <FlatButton
+      label="Full Erase"
+      primary={true}
+      onTouchTap={this.handleWipe} />
+        </div>
+        </div>
     );
   }
 }

@@ -101,7 +101,6 @@ export default class CardView extends React.Component {
         <FlatButton
       label="Save"
       primary={true}
-      keyboardFocused={true}
       onTouchTap={this.handleSubmit}
         />,
     ] : [] ;

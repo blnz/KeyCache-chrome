@@ -137,7 +137,7 @@ export default class App extends Component {
 	    >
             { logoutMenuItem() }
               
-            <MenuItem primaryText="Preferences" onTouchTap={ () => { hashHistory.push("/settings") } }/>
+            <MenuItem primaryText="Settings" onTouchTap={ () => { hashHistory.push("/settings") } }/>
             { eraseAllMenuItem() }
 	    </IconMenu>
         );

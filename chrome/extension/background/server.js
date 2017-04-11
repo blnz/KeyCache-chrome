@@ -109,6 +109,17 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       store.dispatch(myActions.wipeAllData())
     }
 
+
+    if (msg.subject === 'restoreBackup') {
+      store.dispatch(myActions.restoreBackupData(msg.data))
+    }
+
+
+    if (msg.subject === 'importCards') {
+      console.log("got importCards message", msg)
+      store.dispatch(myActions.importCardsData(msg.cards))
+    }
+
     if (msg.subject === 'useSyncServerToggle') {
 
       store.dispatch(myActions.useSyncServerToggleData())

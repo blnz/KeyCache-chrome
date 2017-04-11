@@ -4,6 +4,7 @@
   "description": "KeyCache Chrome extension React.js project",
   "scripts": {
     "dev": "node scripts/dev",
+    "pwa": "node scripts/pwa",
     "build": "node scripts/build",
     "compress": "node scripts/compress",
     "compress-keygen": "crx keygen",
@@ -77,6 +78,7 @@
     "react-copy-to-clipboard": "^4.2.3",
     "react-dock": "^0.2.3",
     "react-dom": "^15.0.2",
+    "react-dropzone": "^3.6.0",
     "react-redux": "^4.3.0",
     "react-router": "^2.7.0",
     "react-tap-event-plugin": "^1.0.0",

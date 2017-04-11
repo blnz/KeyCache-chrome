@@ -11,13 +11,14 @@ import { wrappedKey,
          encryptStringToSerialized,
          decryptSerializedToString } from '../utils/kcCrypto';
 
+import { sendMessage } from '../utils/messaging'
 
 export function useSyncServerToggleData() {
   return { type: types.USE_SYNC_SERVER_TOGGLE };
 }
 
 export function useSyncServerToggle() {
-  chrome.runtime.sendMessage({from: "app",
+  /*chrome.runtime.*/ sendMessage({from: "app",
                               subject: "useSyncServerToggle"})
 }  
 
@@ -28,7 +29,7 @@ export function setSyncServerHostData(host) {
 
 
 export function setSyncServerHost(host) {
-  chrome.runtime.sendMessage({from: "app",
+  /*chrome.runtime.*/ sendMessage({from: "app",
                               subject: "setSyncServerHost",
                               syncServerHost: host})
 }  
@@ -42,7 +43,7 @@ export function deleteCardData(cardData) {
 }
 
 export function deleteCard(cardData) {
-  chrome.runtime.sendMessage({from: "app",
+  /*chrome.runtime.*/ sendMessage({from: "app",
                               subject: "cardDelete",
                               cardData: cardData }, function (resp) {
                                 console.log("got response", resp)
@@ -69,7 +70,7 @@ export function addCard(cardData) {
         clear: cardData,
         encrypted }
       
-      chrome.runtime.sendMessage({from: "app",
+      /*chrome.runtime.*/ sendMessage({from: "app",
                                   subject: "cardCreate",
                                   cardData: newCard }, function (resp) {
                                     console.log("got response", resp)
@@ -97,7 +98,7 @@ export function updateCard(card) {
         encrypted
       }
       
-      chrome.runtime.sendMessage({from: "app",
+      /*chrome.runtime.*/ sendMessage({from: "app",
                                   subject: "cardUpdate",
                                   cardData: updatedCard }, function (resp) {
                                     console.log("got response", resp)
@@ -126,7 +127,7 @@ export function registerUser(userData) {
     }).then (function(wrappedKey) {
 
       const newUserData = Object.assign({}, userData, { wrappedKey })
-      chrome.runtime.sendMessage({from: "app",
+      /*chrome.runtime.*/ sendMessage({from: "app",
                                   subject: "registration",
                                   user: newUserData }, function(response) {
                                     console.log("got response", response);
@@ -152,10 +153,11 @@ export function authenticateUser(userAuthData) {
 
     const { wrappedKey } = getState().user
     const { passphrase } = userAuthData
-    
+    console.log('gonna unwrap', wrappedKey);
     return unWrappedKey(passphrase, wrappedKey).then( masterKey => {
 
-      chrome.runtime.sendMessage({from: "app",
+     console.log('with master', masterKey);
+      /*chrome.runtime.*/ sendMessage({from: "app",
                                   subject: "authentication",
                                   userAuthData }, function(response) {
                                   //  console.log("got response", response);
@@ -247,6 +249,19 @@ export function logoutUser() {
   return { type: types.REMOVE_CLEAR_MASTERKEY };
 }
 
+
+export function restoreBackupData(data) {
+  return { type: types.RESTORE_BACKUP , data};
+}
+
+
+export function restoreBackup(data) {
+  /*chrome.runtime.*/ sendMessage({from: "app",
+                              subject: "restoreBackup",
+                              data})
+}
+
+
 // wipes out all data!!!
 export function wipeAllData() {
   return { type: types.DELETE_ALL };
@@ -254,9 +269,21 @@ export function wipeAllData() {
 
 // wipes out all data!!!
 export function deleteAll() {
-  chrome.runtime.sendMessage({from: "app",
+  /*chrome.runtime.*/ sendMessage({from: "app",
                               subject: "deleteAll" })
   return wipeAllData()
+}
+
+
+export function importCardsData(cards) {
+  return { type: types.IMPORT_CARDS, cards }
+}
+
+export function importCards(cards) {
+  /*chrome.runtime.*/ sendMessage({from: "app",
+                              subject: "importCards",
+                              cards})
+  return importCardsData(cards)
 }
 
 
