@@ -12,13 +12,15 @@ export default function () {
   return next => (reducer, initialState) => {
 
     const store = next(reducer, initialState);
-    if (chrome.tabs) {
-
-      store.subscribe(() => {
-        const state = store.getState();
-        //        saveState(state);
-      });
-    }
+    let chrome = Object.assign( {}, chrome );
+      if (chrome.tabs) {
+        
+        store.subscribe(() => {
+          const state = store.getState();
+          //        saveState(state);
+        });
+      }
+   
     return store;
   };
 }

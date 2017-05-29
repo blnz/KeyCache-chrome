@@ -114,6 +114,10 @@ export function registerUser(userData) {
   return function (dispatch, getState) {
     console.log("registerUser got dispatch");
 
+    if (window.crypto && !window.crypto.subtle && window.crypto.webkitSubtle) {
+      window.crypto.subtle = window.crypto.webkitSubtle;
+    }
+    
     // generate a new, random masterkey
     var keyPromise = window.crypto.subtle.generateKey(
       {name: "AES-CBC", length: 256}, // Algorithm the key will be used with
