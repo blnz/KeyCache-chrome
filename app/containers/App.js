@@ -1,24 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Router, Route, hashHistory } from 'react-router';
-
-import Header from '../components/Header';
-
-import CardsList from '../components/CardsList';
-import Registration from '../components/Registration';
-import Authentication from '../components/Authentication';
-
-import * as Actions from '../actions/cards';
-
-import {deepOrange500} from 'material-ui/styles/colors';
-import {
-  cyan500, cyan700,
-  pinkA200,
-  grey100, grey300, grey400, grey500,
-  white, darkBlack, fullBlack,
-} from  'material-ui/styles/colors';
-import {fade} from 'material-ui/utils/colorManipulator';
+import { hashHistory } from 'react-router';
+import { fade } from 'material-ui/utils/colorManipulator';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
@@ -30,6 +14,19 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 
+import CardsList from '../components/CardsList';
+import Registration from '../components/Registration';
+import Authentication from '../components/Authentication';
+
+import * as Actions from '../actions/cards';
+
+import {
+  cyan500,
+  pinkA200,
+  grey100, grey300, grey400, grey500,
+  white, darkBlack, fullBlack,
+} from  'material-ui/styles/colors';
+
 const styles = {
   container: {
     // textAlign: 'center',
@@ -38,7 +35,7 @@ const styles = {
 };
 
 const muiTheme = getMuiTheme({
-  
+
   palette: {
     primary1Color: '#009e9e', // cyan500,
     primary2Color: '#19f6f6', // cyan700,
@@ -95,7 +92,7 @@ export default class App extends Component {
   }
 
   render() {
-    
+    console.log('App props:', this.props);
     const { user, cards, temps, actions } = this.props;
 
     const isLoggedIn = temps.masterKey
@@ -163,7 +160,7 @@ export default class App extends Component {
 <p>The pass phrase will be used to secure all the data that KeyCache manages for you. KeyCache doesn't store the pass phrase, so if you lose or forget it, KeyCache won't be able to recover it. You'll want to invent a pass phrase that is possible for you to remember but impossible for others to guess.</p>
             <p>To get started, click the "REGISTER" button, below</p>
             </div>
-            <Registration onSave={this.handleRegister} />
+            <Registration onSave={ this.handleRegister } />
             </div>
         )
       }

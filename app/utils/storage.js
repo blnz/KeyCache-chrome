@@ -1,26 +1,21 @@
 
-function setBadge(todos) {
-  console.log("setBadge in storage");
-  if (chrome.browserAction) {
-    // const count = todos.filter((todo) => !todo.marked).length;
-    // chrome.browserAction.setBadgeText({ text: count > 0 ? count.toString() : '' });
-  }
-}
+// function setBadge(todos) {
 
-export default function () {
+//   if (chrome.browserAction) {
+//     // const count = todos.filter((todo) => !todo.marked).length;
+//     // chrome.browserAction.setBadgeText({ text: count > 0 ? count.toString() : '' });
+//   }
+// }
 
+export default () => {
   return next => (reducer, initialState) => {
-
     const store = next(reducer, initialState);
-    let chrome = Object.assign( {}, chrome );
+    const chrome = Object.assign({}, chrome);
       if (chrome.tabs) {
-        
-        store.subscribe(() => {
+        store.subscribe( () => {
           const state = store.getState();
-          //        saveState(state);
         });
       }
-   
     return store;
   };
 }

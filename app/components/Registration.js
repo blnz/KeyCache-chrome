@@ -27,20 +27,19 @@ export default class Registration extends React.Component {
   };
 
   handleClose = () => {
-    this.setState({open: false});
+    this.setState({ open: false });
   };
 
   handleSubmit = () => {
-    if (this.state.userData.passphrase === this.state.userData.passphrase2) { 
-      this.setState({open: false});
+    if (this.state.userData.passphrase === this.state.userData.passphrase2) {
+      this.setState({ open: false });
       this.props.onSave(this.state.userData);
     } else {
-      this.setState( {mismatch: true} )
+      this.setState({ mismatch: true });
     }
   };
 
   render() {
-
     const actions = [
       <FlatButton
         label="Cancel"

@@ -1,168 +1,151 @@
+//
+// the bbackground runs as a server, allowing our extension code
+// running in individual tabs or windows to get and send state
+// updates to a single repository for this browser
+
 import createStore from '../../../app/store/configureStore';
-import { loadState, saveState }  from '../../../app/utils/localStorage';
+import { loadState, saveState } from '../../../app/utils/localStorage';
 
-import { wrappedKey,
-         unWrappedKey,
-         deriveBits,
-         encryptStringToSerialized,
-         decryptSerializedToString } from '../../../app/utils/kcCrypto';
+// import {
+//   wrappedKey,
+//   unWrappedKey,
+//   deriveBits,
+//   encryptStringToSerialized,
+//   decryptSerializedToString } from '../../../app/utils/kcCrypto';
 
-import  * as myActions  from '../../../app/actions/cards'
+import * as myActions from '../../../app/actions/cards';
 
 const persisted = loadState();
 const store = createStore(persisted);
 
 store.subscribe(() => {
-  console.log("persisting state to localStorage", store.getState());
+  //  console.log('persisting state to localStorage', store.getState());
   saveState(store.getState());
 });
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-  console.log("got message from sender", msg, sender);
-
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  console.log('server got message', msg);
   if (msg.from === 'app') {
     if (msg.subject === 'authentication') {
-      console.log("authentication", msg)
-      store.dispatch(myActions.bgAuthenticateUser(msg.userAuthData))
+      //  console.log('authentication', msg)
+      store.dispatch(myActions.bgAuthenticateUser(msg.userAuthData));
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "authentication",
-                                  userAuthData: msg.userAuthData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
-    }
-    
-    if (msg.subject === 'logoutUser') {
-      console.log("logout", msg)
-      store.dispatch(myActions.logoutUser())
-      // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background", subject: "logoutUser" },
-                                 function (resp) {
-                                   console.log("got response", resp)
-                                 })
-    }
-    
-    if (msg.subject === 'registration') {
-      console.log("registration", msg)
-      store.dispatch(myActions.registerUserData(msg.user))
-      store.dispatch(myActions.registerUserRemote(msg.user))
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "registration",
-                                  user: msg.user }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
-      
-      store.dispatch(myActions.bgAuthenticateUser(msg.user))
-      // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "authentication",
-                                  userAuthData: msg.userAuthData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'authentication',
+        userAuthData: msg.userAuthData
+      });
     }
 
-    if  (msg.subject === 'cardUpdate') {
-      console.log("cardUpdate", msg)
-      store.dispatch(myActions.updateCardData(msg.cardData))
+    if (msg.subject === 'logoutUser') {
+      //      console.log('logout', msg);
+      store.dispatch(myActions.logoutUser());
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "cardUpdate",
-                                  cardData: msg.cardData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
+      chrome.runtime.sendMessage({ from: 'background', subject: 'logoutUser' });
     }
-    
-    if (msg.subject === 'cardCreate') {
-      console.log("cardCreate", msg)
-      store.dispatch(myActions.addCardData(msg.cardData))
+
+    if (msg.subject === 'registration') {
+      store.dispatch(myActions.registerUserData(msg.user));
+      store.dispatch(myActions.registerUserRemote(msg.user));
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'registration',
+        user: msg.user
+      });
+
+      store.dispatch(myActions.bgAuthenticateUser(msg.user));
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "cardCreate",
-                                  cardData: msg.cardData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'authentication',
+        userAuthData: msg.userAuthData
+      });
+    }
+
+    if (msg.subject === 'cardUpdate') {
+      store.dispatch(myActions.updateCardData(msg.cardData));
+      // forward to any popup that's listening
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'cardUpdate',
+        cardData: msg.cardData
+      });
+    }
+
+    if (msg.subject === 'cardCreate') {
+      store.dispatch(myActions.addCardData(msg.cardData));
+      // forward to any popup that's listening
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'cardCreate',
+        cardData: msg.cardData
+      });
     }
 
     if (msg.subject === 'cardDelete') {
-      console.log("cardDelete", msg)
-      store.dispatch(myActions.deleteCardData(msg.cardData))
+      store.dispatch(myActions.deleteCardData(msg.cardData));
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "cardDelete",
-                                  cardData: msg.cardData }, function (resp) {
-                                    console.log("got response", resp)
-                                  })
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'cardDelete',
+        cardData: msg.cardData });
     }
-    
-    // when a new window pups uup, it can come here to ee if user is already
+
+    // when a new window pups uup, it can come here to see if user is already
     // authenticated
     if (msg.subject === 'getCredentials') {
-      
-      console.log("getCredentials", store.getState())
-      console.log("getCredentials", msg, JSON.stringify(store.getState().temps.user))
-      sendResponse({from: "background",
-                    user: store.getState().temps.user})
-      
+      sendResponse({
+        from: 'background',
+        user: store.getState().temps.user
+      });
     }
 
     if (msg.subject === 'deleteAll') {
-      store.dispatch(myActions.wipeAllData())
+      store.dispatch(myActions.wipeAllData());
     }
 
-
     if (msg.subject === 'restoreBackup') {
-      store.dispatch(myActions.restoreBackupData(msg.data))
+      store.dispatch(myActions.restoreBackupData(msg.data));
     }
 
 
     if (msg.subject === 'importCards') {
-      console.log("got importCards message", msg)
-      store.dispatch(myActions.importCardsData(msg.cards))
+      store.dispatch(myActions.importCardsData(msg.cards));
     }
 
     if (msg.subject === 'useSyncServerToggle') {
-
-      store.dispatch(myActions.useSyncServerToggleData())
+      store.dispatch(myActions.useSyncServerToggleData());
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background", subject: "useSyncServerToggle" },
-                                 function (resp) {
-                                   console.log("got response", resp)
-                                 })
+      chrome.runtime.sendMessage({
+        from: 'background', subject: 'useSyncServerToggle' });
     }
-    
-    if (msg.subject === 'setSyncServerHost') {
 
-      store.dispatch(myActions.setSyncServerHostData(msg.syncServerHost))
+    if (msg.subject === 'setSyncServerHost') {
+      store.dispatch(myActions.setSyncServerHostData(msg.syncServerHost));
       // forward to any popup that's listening
-      chrome.runtime.sendMessage({from: "background",
-                                  subject: "setSyncServerHost",
-                                  syncServerHost: msg.syncServerHost},
-                                 function (resp) {
-                                   console.log("got response", resp)
-                                 })
+      chrome.runtime.sendMessage({
+        from: 'background',
+        subject: 'setSyncServerHost',
+        syncServerHost: msg.syncServerHost
+      });
     }
   }
 
   if ((msg.from === 'content') && (msg.subject === 'foundForm')) {
-    const { hostname } = new URL(sender.url)
-    
-    const hits = store.getState().cards.filter( ( card ) => {
-      return card.clear && (card.clear.type === "web") && (hostname === card.clear.url)
-    })
-    
-    if (hits.length == 1) {
-      chrome.tabs.sendMessage(sender.tab.id, {subject: "fillForm",
-                                              username: hits[0].clear.username,
-                                              password: hits[0].clear.password
-                                             }, function(response) {
-                                               console.log(response)
-                                             });
-    } 
-    
-    chrome.tabs.sendMessage(sender.tab.id, {subject: "placeInjector",
-                                           }, function(response) {
-                                             console.log(response)
-                                           });
-    
+    const { hostname } = new URL(sender.url);
+
+    const hits = store.getState().cards.filter(
+      card => card.clear && (card.clear.type === 'web') && (hostname === card.clear.url)
+    );
+
+    if (hits.length === 1) {
+      chrome.tabs.sendMessage(sender.tab.id, {
+        subject: 'fillForm',
+        username: hits[0].clear.username,
+        password: hits[0].clear.password
+      });
+    }
+
+    chrome.tabs.sendMessage(sender.tab.id, { subject: 'placeInjector' });
   }
 });

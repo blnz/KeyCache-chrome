@@ -1,19 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import Dialog from 'material-ui/Dialog';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
 /**
  * Dialog for authenticating
  */
-export default class Authentication extends React.Component {
-
+export default class Authentication extends Component {
   static propTypes = {
-    onSave:  PropTypes.func.isRequired,
-    user:    PropTypes.object.isRequired
+    onSave: PropTypes.func.isRequired
   };
 
   state = {
@@ -22,42 +17,31 @@ export default class Authentication extends React.Component {
   };
 
   handleOpen = () => {
-    this.setState({open: true,
-                   userData : {}});
+    this.setState({
+      open: true,
+      userData: {}
+    });
   };
 
   handleClose = () => {
-    this.setState({open: false});
+    this.setState({ open: false });
   };
 
   handleSubmit = () => {
-    this.setState({open: false});
+    this.setState({ open: false });
     this.props.onSave(this.state.userData);
   };
 
   render() {
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Login"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
-    const fabStyle = {
-      margin: 0,
-      top: 'auto',
-      right: 20,
-      bottom: 20,
-      left: 'auto',
-      position: 'fixed',
-    };
+    const actions = [<FlatButton
+                     label="Cancel"
+                     onTouchTap={this.handleClose}
+                     />,
+                     <FlatButton
+                     label="Login"
+                     onTouchTap={this.handleSubmit}
+                     />,
+                    ];
 
     return (
         <div>
@@ -79,7 +63,7 @@ export default class Authentication extends React.Component {
       hintText="jane@example.com"
       floatingLabelText="Username"
       onChange={ e => {
-        var userData = Object.assign({}, this.state.userData, {username: e.target.value});
+        const userData = Object.assign({}, this.state.userData, {username: e.target.value});
         this.setState({userData});} }
       id="username"
         />

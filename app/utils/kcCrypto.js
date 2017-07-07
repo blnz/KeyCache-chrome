@@ -1,6 +1,6 @@
 const bluebird = require('bluebird');
 
-import {toByteArray, fromByteArray} from 'base64-js'
+import {toByteArray, fromByteArray} from 'base64-js';
 
 function stringToArrayBuffer(string) {
   var encoder = new TextEncoder("utf-8");
@@ -17,11 +17,11 @@ function arrayBufferToString(abuf) {
 // the wrapped key produced is an object with three fields of base64
 // encoded Uint8Arrays: { salt, iv, wrapped }
 //
-export function wrappedKey(password, wrappable) {
-  const salt = window.crypto.getRandomValues(new Uint8Array(8))
-  const iterations = 1000
-  const hash = 'SHA-256'
-  const iv  = window.crypto.getRandomValues(new Uint8Array(16))
+export function wrapKey(password, wrappable) {
+  const salt = window.crypto.getRandomValues(new Uint8Array(8));
+  const iterations = 1000;
+  const hash = 'SHA-256';
+  const iv  = window.crypto.getRandomValues(new Uint8Array(16));
 
   return new Promise( function(resolve, reject) {
     // first we import the password into a CryptoKey object
@@ -31,49 +31,51 @@ export function wrappedKey(password, wrappable) {
       {"name": "PBKDF2"},
       false,
       ["deriveKey"]
-    ).
-      
+    )
+    
     // Derive a key from the password
-    then( (baseKey) => {
-      return window.crypto.subtle.deriveKey(
-        {
-          "name": "PBKDF2",
-          "salt": salt.buffer, 
-          "iterations": iterations,
-          "hash": hash
-        },
-        baseKey,
-        {"name": "AES-CBC", "length": 256}, // Key we want
-        true,                               // Extrable
-        ["encrypt", "decrypt", "wrapKey"]              // For new key
-      );
-    }).then( (derivedWrappingKey) => {
-      return window.crypto.subtle.wrapKey(
-        "jwk",      
-        wrappable,  
-        derivedWrappingKey,  //the AES-CBC key with "wrapKey" usage flag
-        {   name: "AES-CBC", iv: iv }
-      )
-    }).then( (wrapped) => {
-      //returns an ArrayBuffer containing the encrypted data
-      resolve({
-        wrapped: fromByteArray(new Uint8Array(wrapped)),
-        iv: fromByteArray(iv),
-        salt: fromByteArray(salt)
+      .then((baseKey) => {
+        return window.crypto.subtle.deriveKey(
+          {
+            "name": "PBKDF2",
+            "salt": salt.buffer, 
+            "iterations": iterations,
+            "hash": hash
+          },
+          baseKey,
+          {"name": "AES-CBC", "length": 256}, // Key we want
+          true,                               // Extrable
+          ["encrypt", "decrypt", "wrapKey"]              // For new key
+        );
       })
-    }).
-    catch(function(err) {
-      console.log("Key derivation failed: " + err.message);
-      reject(err)
-    });
-  })
+      .then( (derivedWrappingKey) => {
+        return window.crypto.subtle.wrapKey(
+          "jwk",      
+          wrappable,  
+          derivedWrappingKey,  //the AES-CBC key with "wrapKey" usage flag
+          {   name: "AES-CBC", iv: iv }
+        );
+      })
+      .then((wrapped) => {
+        //returns an ArrayBuffer containing the encrypted data
+        resolve({
+          wrapped: fromByteArray(new Uint8Array(wrapped)),
+          iv: fromByteArray(iv),
+          salt: fromByteArray(salt)
+        });
+      })
+      .catch(function(err) {
+        console.log("Key derivation failed: " + err.message);
+        reject(err);
+      });
+  });
 }
 
 // returns a promise that resolves to the wrapped CryptoKey
-export function unWrappedKey(password, serialized) {
-  const { wrapped, iv, salt } = serialized
-  const iterations = 1000
-  const hash = 'SHA-256'
+export function unWrapKey(password, serialized) {
+  const { wrapped, iv, salt } = serialized;
+  const iterations = 1000;
+  const hash = 'SHA-256';
 
   return new Promise( function(resolve, reject) {
     return window.crypto.subtle.importKey(
@@ -104,29 +106,29 @@ export function unWrappedKey(password, serialized) {
           toByteArray(wrapped), //the key you want to unwrap
           derivedWrappingKey, //the AES-CBC key with "unwrapKey" usage flag
           {   //these are the wrapping key's algorithm options
-          name: "AES-CBC",
-          iv:  toByteArray(iv).buffer, //The initialization vector we used to encrypt
-        },
-        {   //this what you want the wrapped key to become (same as when wrapping)
-          name: "AES-CBC",
-          length: 256
-        },
-        true, //whether the key is extractable (i.e. can be used in exportKey)
-        ["encrypt", "decrypt"] //the usages you want the unwrapped key to have
-      )
-    })
-    .then(function(key){
-      resolve(key)
-    })
-    .catch(function(err){
-      console.error(err);
-      reject(err)
-    })
-  })
+            name: "AES-CBC",
+            iv: toByteArray(iv).buffer //The initialization vector we used to encrypt
+          },
+          {   //this what you want the wrapped key to become (same as when wrapping)
+            name: "AES-CBC",
+            length: 256
+          },
+          true, //whether the key is extractable (i.e. can be used in exportKey)
+          ["encrypt", "decrypt"] //the usages you want the unwrapped key to have
+        );
+      })
+      .then(function(key){
+        resolve(key);
+      })
+      .catch(function(err){
+        console.error(err);
+        reject(err);
+      });
+  });
 }
 
 export function kcEncrypt(key, data) {
-  const iv = window.crypto.getRandomValues(new Uint8Array(16))
+  const iv = window.crypto.getRandomValues(new Uint8Array(16));
   
   return window.crypto.subtle.encrypt(
     {
@@ -137,7 +139,7 @@ export function kcEncrypt(key, data) {
     data  //ArrayBuffer of data  to encrypt
   ).then( (encrypted) => {
     // we got ArrayBuffer containing the encrypted data
-    return { iv: iv, cipherText: new Uint8Array(encrypted) }
+    return { iv: iv, cipherText: new Uint8Array(encrypted) };
   }).catch(function(err){
     console.error(err);
   });
@@ -149,8 +151,8 @@ export function kcEncrypt(key, data) {
 export function encryptStringToSerialized(key, data) {
   return kcEncrypt(key, stringToArrayBuffer(data))
   .then(function(encrypted) {
-    const {iv, cipherText} = encrypted
-    return {iv64: fromByteArray(iv), cipherText64: fromByteArray(cipherText)}
+    const { iv, cipherText } = encrypted;
+    return { iv64: fromByteArray(iv), cipherText64: fromByteArray(cipherText) };
   })
   .catch(function(err){
     console.error(err);
@@ -167,8 +169,8 @@ export function kcDecrypt(key, iv, data) {
     data.buffer //ArrayBuffer of data you want to encrypt
   )
   .then (function(decrypted) {
-    return decrypted
-  })
+    return decrypted;
+  });
 }
 
 // decrypts a object with two fields: {iv64, cipherText64} both fields
@@ -176,14 +178,14 @@ export function kcDecrypt(key, iv, data) {
 // and resolve the decrypted bytes to a utf8 string
 
 export function decryptSerializedToString(key, serialized) {
-  const { iv64, cipherText64 } = serialized
+  const { iv64, cipherText64 } = serialized;
   return kcDecrypt(key, toByteArray(iv64), toByteArray(cipherText64))
   .then(function(bytes){
-    return arrayBufferToString(bytes)
+    return arrayBufferToString(bytes);
   })
   .catch(function(err){
     console.error(err);
-  })
+  });
 }
 
 // a pbkdf2 hash of a passphrase ... not used at present
@@ -202,8 +204,8 @@ export function deriveBits(code, salt, iterations) {
     let params = {name: "PBKDF2", hash: "SHA-1", salt: saltArray, iterations};
     
     // Derive 160 bits using PBKDF2.
-    return crypto.subtle.deriveBits(params, key, 160)
-  })
+    return crypto.subtle.deriveBits(params, key, 160);
+  });
 }
 
 
@@ -213,7 +215,7 @@ export function deriveBits(code, salt, iterations) {
 // then uses the password to extract a copy of the original key
 // and uses the extracted key copy to decrypt the original text
 export function testWrapping1(password) {
-  var data = "hello world"
+  var data = "hello world";
   var keyPromise = window.crypto.subtle.generateKey(
     {name: "AES-CBC", length: 256}, // Algorithm the key will be used with
     true,                           // Can extract key value to binary string
@@ -223,34 +225,34 @@ export function testWrapping1(password) {
   keyPromise.catch(function(err) {console.log("Something went wrong: " + err.message);});
 
   var encryptedPromise = keyPromise.then(function(key) {
-    console.log("got a new AES-KEY:", key)
-    return kcEncrypt(key, stringToArrayBuffer(data))
+    console.log("got a new AES-KEY:", key);
+    return kcEncrypt(key, stringToArrayBuffer(data));
   });
 
   var wrappedPromise = keyPromise.then(function (key){
-    return wrappedKey(password, key)
+    return wrapKey(password, key);
   });
 
   return bluebird.all([keyPromise, encryptedPromise, wrappedPromise])
   .spread( function(key, encrypted, wrapped) {
     //returns an ArrayBuffer containing the encrypted data
-    return  { key, encrypted, wrapped}
+    return  { key, encrypted, wrapped };
   })
   .then(function (keyAndEncrypted) {
-    console.log("our encrypted obbject is with key and wrappedKey", keyAndEncrypted)
-    const { key, encrypted, wrapped } = keyAndEncrypted
-    return unWrappedKey(password, wrapped)
+    console.log("our encrypted obbject is with key and wrappedKey", keyAndEncrypted);
+    const { key, encrypted, wrapped } = keyAndEncrypted;
+    return unWrapKey(password, wrapped)
     .then(function(unwrappedKey){
-      return kcDecrypt(unwrappedKey, encrypted.iv, encrypted.cipherText)
-    })
+      return kcDecrypt(unwrappedKey, encrypted.iv, encrypted.cipherText);
+    });
   })
   .then(function(decrypted){
-    console.log("got decrypted", decrypted)
-    return decrypted
+    console.log("got decrypted", decrypted);
+    return decrypted;
   })
   .catch(function(err) {
-    console.log(err)
-  })
+    console.log(err);
+  });
 }
 
 // another unit test ... creates a new symmetric key,
@@ -259,7 +261,7 @@ export function testWrapping1(password) {
 // then uses the password to extract a copy of the original key
 // and uses the extracted key copy to decrypt the original text
 export function testWrapping(password) {
-  var data = "hello there world"
+  var data = "hello there world";
   var keyPromise = window.crypto.subtle.generateKey(
     {name: "AES-CBC", length: 256}, // Algorithm the key will be used with
     true,                           // Can extract key value to binary string
@@ -274,18 +276,18 @@ export function testWrapping(password) {
   });
 
   var wrappedPromise = keyPromise.then(function (key){
-    return wrappedKey(password, key)
+    return wrapKey(password, key);
   });
 
   return bluebird.all([keyPromise, encryptedPromise, wrappedPromise])
   .spread( function(key, encrypted, wrapped) {
     //returns an ArrayBuffer containing the encrypted data
-    return  { key, encrypted, wrapped}
+    return  { key, encrypted, wrapped };
   })
   .then(function (keyAndEncrypted) {
     console.log("our encrypted obbject is with key and wrappedKey", keyAndEncrypted)
     const { key, encrypted, wrapped } = keyAndEncrypted
-    return unWrappedKey(password, wrapped)
+    return unWrapKey(password, wrapped)
     .then(function(unwrappedKey){
       return decryptSerializedToString(unwrappedKey, encrypted)
     })

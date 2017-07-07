@@ -1,21 +1,21 @@
+
 import React from 'react';
 import ReactDOM from 'react-dom';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 import Root from '../../app/containers/Root';
 import createStore from '../../app/store/configureStore';
 
-import * as actions from '../../app/actions/cards'
+import * as actions from '../../app/actions/cards';
 
 // FIXME: we may prefer to load initial state from bakground page
 //  instead of local storage
-import { loadState, saveState }  from '../../app/utils/localStorage';
-
+import { loadState, saveState } from '../../app/utils/localStorage';
 import { sendMessage, addListener } from '../../app/utils/messaging';
 
 // Loads the single page app into its HTML doc container
 
 window.React = React;
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
 
 //Needed for onTouchTap  (responsive tap events on iOS)
 //Can go away when react 1.0 release
@@ -29,43 +29,43 @@ const store = createStore(persisted);
 
 if (process.env.NODE_ENV === 'pwa') {
   store.subscribe(() => {
-    console.log("persisting state to localStorage", store.getState());
+    //console.log("persisting state to localStorage", store.getState());
     saveState(store.getState());
   });
 }
 
 // check in with the chrome extension's background page to see if we're authenticated
-/*chrome.runtime.*/sendMessage({from: "app",
-                                subject: "getCredentials"} ,
-                               function (resp) {
-                                 if (resp.from === "background" &&
-                                     resp.user &&
-                                     resp.user.passphrase) {
-                                   console.log("background has authenticated ", resp.user)
-                                   store.dispatch(actions.authenticateUserLocal(resp.user))
-                                 }
-                               })
+sendMessage(
+  { from: 'app', subject: 'getCredentials' },
+  (resp) => {
+    console.log('kcapp: got credentials resp:', resp);
+    if (resp.from === 'background' &&
+        resp.user &&
+        resp.user.passphrase) {
+      store.dispatch(actions.authenticateUserLocal(resp.user));
+    }
+  });
 
 // recieve updates from the extension's background page
-/*chrome.runtime.onMessage.*/addListener(
-  function(msg, sender, sendResponse) {
+addListener(
+  (msg, sender) => {
     //    console.log(sender.tab ?
-    //                "from a content script:" + sender.tab.url :
-    //                "from the extension");
+    //                'from a content script:' + sender.tab.url :
+    //                'from the extension');
     if ((msg.from === 'background') || (msg.from === 'app')) {
-      //      console.log("got something from background", msg, sender);
-      if (msg.subject === "authentication") {
-        store.dispatch(actions.authenticateUserLocal(msg.userAuthData))
-      } else if (msg.subject === "cardUpdate") {
-        store.dispatch(actions.updateCardData(msg.cardData))
-      } else if (msg.subject === "cardCreate") {
-        store.dispatch(actions.addCardData(msg.cardData))
-      } else if (msg.subject === "cardDelete") {
-        store.dispatch(actions.deleteCardData(msg.cardData))
-      } else if (msg.subject === "useSyncServerToggle") {
-        store.dispatch(actions.useSyncServerToggleData())
-      } else if (msg.subject === "setSyncServerHost") {
-        store.dispatch(actions.setSyncServerHostData(msg.syncServerHost))
+      //      console.log('got something from background', msg, sender);
+      if (msg.subject === 'authentication') {
+        store.dispatch(actions.authenticateUserLocal(msg.userAuthData));
+      } else if (msg.subject === 'cardUpdate') {
+        store.dispatch(actions.updateCardData(msg.cardData));
+      } else if (msg.subject === 'cardCreate') {
+        store.dispatch(actions.addCardData(msg.cardData));
+      } else if (msg.subject === 'cardDelete') {
+        store.dispatch(actions.deleteCardData(msg.cardData));
+      } else if (msg.subject === 'useSyncServerToggle') {
+        store.dispatch(actions.useSyncServerToggleData());
+      } else if (msg.subject === 'setSyncServerHost') {
+        store.dispatch(actions.setSyncServerHostData(msg.syncServerHost));
       }
     }
   });
@@ -74,4 +74,4 @@ if (process.env.NODE_ENV === 'pwa') {
 ReactDOM.render(
     <Root store={ store } />,
   document.querySelector('#root')
-)
+);

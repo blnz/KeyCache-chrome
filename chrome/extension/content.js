@@ -1,20 +1,18 @@
-console.log("loading content.js");
+//console.log("loading content.js");
 
-import React, { Component } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
-import Dock from 'react-dock';
+//import Dock from 'react-dock';
 import InjectApp from './inject';
 
-console.log("InjectApp is:", InjectApp);
-
 function getLoginForm() {
-  var forms = document.getElementsByTagName('form');
+  const forms = document.getElementsByTagName('form');
 
-  var login_forms = [];
+  let loginForms = [];
 
-  var login_keywords_arr = ["signin", "sign_in", "login", "log_in", "username"];
+  const loginKeywords = ['signin', 'sign_in', 'login', 'log_in', 'username'];
 
-  for (var i = 0; i < forms.length; i++) {
+  for (let i = 0; i < forms.length; i++) {
     var username_field;
     var password_field;
     var possess_login_keyword = false;
@@ -47,8 +45,8 @@ function getLoginForm() {
       password_field = password_fields[0];
     }
 
-    for(var j=0; j<login_keywords_arr.length; j++){
-      var regex = new RegExp(login_keywords_arr[j], 'i');
+    for(var j=0; j<loginKeywords.length; j++){
+      var regex = new RegExp(loginKeywords[j], 'i');
 
       var matches = regex.exec(forms[i].className) ||
           regex.exec(forms[i].name)      ||
@@ -64,13 +62,13 @@ function getLoginForm() {
     }
 
     if (username_field_count > 0 && password_field_count == 1) {
-      login_forms.push({'username_field': username_field, 'password_field': password_field, 'possess_login_keyword': possess_login_keyword});
+      loginForms.push({'username_field': username_field, 'password_field': password_field, 'possess_login_keyword': possess_login_keyword});
     }
   }
 
   // Get only visible forms
-  if (login_forms.length > 1) {
-    login_forms = function(forms) {
+  if (loginForms.length > 1) {
+    loginForms = function(forms) {
       var result = new Array();
 
       for (var i = 0; i < forms.length; i++) {
@@ -80,12 +78,12 @@ function getLoginForm() {
       }
 
       return result;
-    }(login_forms);
+    }(loginForms);
   }
   
   // Get the forms only containing login keywords
-  if (login_forms.length > 1){
-    login_forms = function(forms) {
+  if (loginForms.length > 1){
+    loginForms = function(forms) {
       var result = new Array();
 
       for (var i = 0; i < forms.length; i++) {
@@ -95,18 +93,18 @@ function getLoginForm() {
       }
 
       return result;
-    }(login_forms);
+    }(loginForms);
   }
 
-  if (login_forms.length == 0) {
+  if (loginForms.length == 0) {
     console.log(' no login form could not be identified.');
     return undefined;
-  } else if(login_forms.length == 1) {
+  } else if(loginForms.length == 1) {
     return {
-      'username_field': login_forms[0].username_field,
-      'password_field': login_forms[0].password_field
+      'username_field': loginForms[0].username_field,
+      'password_field': loginForms[0].password_field
     }
-  } else if(login_forms.length > 1){
+  } else if(loginForms.length > 1){
     console.log('There is more than one form could be identified as login form.');
     return undefined;
   }
@@ -126,7 +124,7 @@ function fillCredentials(username, password){
 }
 
 function getInputsByType(node, type){
-  var allInputs  = node.getElementsByTagName("input");
+  var allInputs  = node.getElementsByTagName('input');
   var typeInputs = new Array();
 
   for (var i = 0; i < allInputs.length; i++) {
@@ -258,7 +256,7 @@ var VISIBILITY = (function(){
 
 var lf = getLoginForm();
 if (lf) {
-  console.log("found a login form", lf);
+  console.log('found a login form', lf);
 
   chrome.runtime.sendMessage({
     from:    'content',
@@ -268,15 +266,15 @@ if (lf) {
   // Listen for messages from the popup
   chrome.runtime.onMessage.addListener(function (msg, sender, response) {
 
-    console.log("got message", sender, msg)
+    console.log('got message', sender, msg)
 
     if (msg.subject === 'fillForm') {
-      console.log("will fill")
+      console.log('will fill')
       fillCredentials(msg.username, msg.password)
     }
 
     if (msg.subject === 'placeInjector') {
-      console.log("will place injector")
+      console.log('will place injector')
       const injectDOM = document.createElement('div');
       injectDOM.className = 'inject-keycache';
       injectDOM.style.textAlign = 'center';
@@ -288,6 +286,6 @@ if (lf) {
   });
   
 } else {
-  console.log("no login form");
+  console.log('no login form');
 }
 
