@@ -72,39 +72,39 @@ export default class CardsList extends Component {
     let viewDialog;
     if (this.state.activeCard) {
       viewDialog = (
-          <CardViewDialog
-        card={this.state.activeCard}
-        onEdit={this.handleCardSave}
-        onClose={this.handleViewCancel}
-        onDelete={this.handleCardDelete}
-        onSave={this.handleCardSave} />
+        <CardViewDialog
+          card={this.state.activeCard}
+          onEdit={this.handleCardSave}
+          onClose={this.handleViewCancel}
+          onDelete={this.handleCardDelete}
+          onSave={this.handleCardSave}
+        />
       );
     }
 
-    let filteredCards = this.props.cards;
+    let filteredCards = this.props.cards.filter(card => card.clear);
+
     if (this.state.search && this.state.search.length > 0) {
       filteredCards = this.props.cards.filter(searchFilter(this.state.search));
     }
 
-    const sortedCards = filteredCards.sort((a, b) =>
-      a.clear.name.localeCompare(b.clear.name)
-    );
+    const sortedCards =
+          filteredCards.sort((a, b) => a.clear.name.localeCompare(b.clear.name));
 
     return (
-        <div>
-        <TextField style={searchStyle}
-      floatingLabelText='search'
-      onChange={ e => {
-        this.setState( {search: e.target.value} );} }
-      id='username'
+      <div>
+        <TextField
+          style={searchStyle}
+          floatingLabelText={'search'}
+          onChange={e => this.setState({ search: e.target.value })}
+          id={'username'}
         />
-        
         <List>
-        { sortedCards.map(card => this.cardListItem(card)) }
-      </List>
+          { sortedCards.map(card => this.cardListItem(card)) }
+        </List>
         { viewDialog }
-        <CardCreateDialog onSave={this.handleCreate}/> 
-        </div>
+        <CardCreateDialog onSave={this.handleCreate} />
+      </div>
     );
   }
 }

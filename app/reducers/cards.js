@@ -4,28 +4,25 @@ const initialState = [];
 
 const actionsMap = {
 
+  foo: (x, y) => x + y,
+
   // cards are reflected in localStorage, so we'll strip the clear portion before saving
   [ActionTypes.ADD_CARD](state, action) {
-    const { clear, encrypted, id } = action.cardData
+    const { clear, encrypted, id } = action.cardData;
     return [{
       id,
       version: new Date().toISOString(),
       clear,
-      encrypted 
+      encrypted
     }, ...state];
   },
 
   [ActionTypes.UPDATE_CARD](state, action) {
-    const { clear, encrypted } = action.cardData
-    return [ action.cardData, ...state.filter( (card) =>  card.id != action.cardData.id ) ]
+    return [action.cardData, ...state.filter(card => card.id !== action.cardData.id)];
   },
 
   [ActionTypes.IMPORT_CARDS](state, action) {
-    console.log("IMPORT_CARDS", action)
-    const compare = (carda, cardb) => {
-      return 1   // fixme
-    }
-    return [ ...state, ...action.cards ]
+    return [...state, ...action.cards];
   },
 
   [ActionTypes.DELETE_ALL](state, action) {
@@ -44,7 +41,7 @@ const actionsMap = {
         Object.assign({}, card, { clear: action.cardData }) :
         card)
     );
-  },
+  }
 };
 
 export default function cards(state = initialState, action) {

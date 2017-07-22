@@ -41,11 +41,11 @@ const baseDevConfig = () => ({
     })
   ],
   resolve: {
-    extensions: ['', '.js']
+    extensions: ['', '.js', '.jsx']
   },
   module: {
     loaders: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       loader: 'babel',
       exclude: /node_modules/,
       query: {

@@ -1,36 +1,40 @@
-const bluebird = require('bluebird');
-global.Promise = bluebird;
 import 'isomorphic-fetch';
 
 import * as types from '../constants/ActionTypes';
 import { CALL_API } from '../middleware/api';
 
-import { wrapKey,
-         unWrapKey,
-         deriveBits,
-         encryptStringToSerialized,
-         decryptSerializedToString } from '../utils/kcCrypto';
+import {
+  wrapKey,
+  unWrapKey,
+  deriveBits,
+  encryptStringToSerialized,
+  decryptSerializedToString
+} from '../utils/kcCrypto';
 
 import { sendMessage } from '../utils/messaging';
+
+const bluebird = require('bluebird');
+
+global.Promise = bluebird;
 
 export function useSyncServerToggleData() {
   return { type: types.USE_SYNC_SERVER_TOGGLE };
 }
 
 export function useSyncServerToggle() {
-  sendMessage({ from: 'app',
-                subject: 'useSyncServerToggle' });
+  sendMessage({ from: 'app', subject: 'useSyncServerToggle' });
 }
 
 export function setSyncServerHostData(host) {
-  return { type: types.SERVER_HOST_SET,
-           syncServerHost: host };
+  return { type: types.SERVER_HOST_SET, syncServerHost: host };
 }
 
 export function setSyncServerHost(host) {
-  sendMessage({ from: 'app',
-                subject: 'setSyncServerHost',
-                syncServerHost: host });
+  sendMessage({
+    from: 'app',
+    subject: 'setSyncServerHost',
+    syncServerHost: host
+  });
 }
 
 export function setClearMasterKey(masterKey) {
@@ -46,9 +50,11 @@ export function deleteCardData(cardData) {
 }
 
 export function deleteCard(cardData) {
-  sendMessage({ from: 'app',
-                subject: 'cardDelete',
-                cardData });
+  sendMessage({
+    from: 'app',
+    subject: 'cardDelete',
+    cardData
+  });
 }
 
 export function updateCardData(cardData) {
@@ -68,9 +74,11 @@ export function addCard(cardData) {
         clear: cardData,
         encrypted };
 
-      sendMessage({ from: 'app',
-                    subject: 'cardCreate',
-                    cardData: newCard });
+      sendMessage({
+        from: 'app',
+        subject: 'cardCreate',
+        cardData: newCard
+      });
     });
   };
 }
@@ -90,9 +98,11 @@ export function updateCard(card) {
         encrypted
       };
 
-      sendMessage({ from: 'app',
-                    subject: 'cardUpdate',
-                    cardData: updatedCard });
+      sendMessage({
+        from: 'app',
+        subject: 'cardUpdate',
+        cardData: updatedCard
+      });
       // we'll get the data back from background server && do the insert then
     });
   };
@@ -111,8 +121,8 @@ export function registerUser(userData) {
     // generate a new, random masterkey
     const keyPromise = window.crypto.subtle.generateKey(
       { name: 'AES-CBC', length: 256 }, // Algorithm the key will be used with
-      true,                           // Can extract key value to binary string
-      ['encrypt', 'decrypt']          // Use for these operations
+      true, // Can extract key value to binary string
+      ['encrypt', 'decrypt'] // Use for these operations
     );
 
     keyPromise.then((masterKey) => {
@@ -120,9 +130,11 @@ export function registerUser(userData) {
       return wrapKey(userData.passphrase, masterKey);
     }).then((wrappedKey) => {
       const newUserData = Object.assign({}, userData, { wrappedKey });
-      sendMessage({ from: 'app',
-                    subject: 'registration',
-                    user: newUserData });
+      sendMessage({
+        from: 'app',
+        subject: 'registration',
+        user: newUserData
+      });
       return dispatch(registerUserData(newUserData));
     }).catch(() => {
       //console.log('caught:', err);
@@ -137,9 +149,11 @@ export function authenticateUser(userAuthData) {
     const { passphrase } = userAuthData;
 
     return unWrapKey(passphrase, wrappedKey).then((masterKey) => {
-      sendMessage({ from: 'app',
-                    subject: 'authentication',
-                    userAuthData });
+      sendMessage({
+        from: 'app',
+        subject: 'authentication',
+        userAuthData
+      });
       dispatch({ type: types.SET_CLEAR_MASTERKEY, masterKey });
     }).then(() => {
       // decrypt all the cards
@@ -185,10 +199,10 @@ export function bgAuthenticateUser(userAuthData) {
 
 // given user's secret, use it to open masterKey, then decrypt stuff 
 export function authenticateUserLocal(userAuthData) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const wrappedKey = getState().user.wrappedKey;
     const { passphrase } = userAuthData;
-    
+
     return unWrapKey(passphrase, wrappedKey)
       .then((masterKey) => {
         dispatch({ type: types.SET_CLEAR_MASTERKEY, masterKey });
@@ -213,13 +227,15 @@ export function logoutUser() {
 }
 
 export function restoreBackupData(data) {
-  return { type: types.RESTORE_BACKUP , data};
+  return { type: types.RESTORE_BACKUP, data };
 }
 
 export function restoreBackup(data) {
-  sendMessage({ from: 'app',
-                subject: 'restoreBackup',
-                data });
+  sendMessage({
+    from: 'app',
+    subject: 'restoreBackup',
+    data
+  });
 }
 
 // wipes out all data!!!
@@ -229,8 +245,7 @@ export function wipeAllData() {
 
 // wipes out all data!!!
 export function deleteAll() {
-  sendMessage({ from: 'app',
-                subject: 'deleteAll' });
+  sendMessage({ from: 'app', subject: 'deleteAll' });
   return wipeAllData();
 }
 
@@ -239,9 +254,11 @@ export function importCardsData(cards) {
 }
 
 export function importCards(cards) {
-  sendMessage({ from: 'app',
-                subject: 'importCards',
-                cards });
+  sendMessage({
+    from: 'app',
+    subject: 'importCards',
+    cards
+  });
   return importCardsData(cards);
 }
 
@@ -252,13 +269,13 @@ const postEndpoint = (body, state, route, session) => {
     opts: {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     }
   });
-}
+};
 
 const putEndpoint = (body, state, route, session) => {
   const host = state.settings.syncServerHost;
@@ -267,13 +284,13 @@ const putEndpoint = (body, state, route, session) => {
     opts: {
       method: 'PUT',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
     }
   });
-}
+};
 
 const deleteEndpoint = (state, route, session) => {
   const host = state.settings.syncServerHost;
@@ -282,11 +299,11 @@ const deleteEndpoint = (state, route, session) => {
     opts: {
       method: 'DELETE',
       headers: {
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     }
   });
-}
+};
 
 const getEndpoint = (state, route, session) => {
   const host = state.settings.syncServerHost;
@@ -295,30 +312,33 @@ const getEndpoint = (state, route, session) => {
     opts: {
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     }
   });
-}
-
+};
 
 const registerUserCallAPI = (user) => {
   return {
     [CALL_API]: {
-      types: [ types.USER_REGISTER_REQUEST, types.USER_REGISTER_SUCCESS, types.USER_REGISTER_FAILURE],
-      endpoint: (state) => postEndpoint(user, state, 'register')
+      types: [types.USER_REGISTER_REQUEST, types.USER_REGISTER_SUCCESS,
+              types.USER_REGISTER_FAILURE],
+      endpoint: state => postEndpoint(user, state, 'register')
     }
   };
 }
 
 export function registerUserRemote(user) {
   return (dispatch, getState) => {
-    deriveBits(user.passphrase, 'sample-salt', 100000).then((bits) => {
-      var userReq = { secret: bits.toString('hex'),
-                      username: user.username,
-                      wrapped_master: user.wrappedKey };
-      dispatch(registerUserCallAPI(userReq));
-    });
+    deriveBits(user.passphrase, 'sample-salt', 100000)
+      .then((bits) => {
+        const userReq = {
+          secret: bits.toString('hex'),
+          username: user.username,
+          wrapped_master: user.wrappedKey
+        };
+        dispatch(registerUserCallAPI(userReq));
+      });
   };
 }
 
@@ -326,14 +346,20 @@ export function registerUserRemote(user) {
 export function sessionOpenRemote(user) {
   return (dispatch, getState) => {
     deriveBits(user.passphrase, 'sample-salt', 100000).then((bits) => {
-      let userReq = { secret: bits.toString('hex'),
-                      username: user.username };
-      let endpoint = (state) => postEndpoint(userReq, state, 'authenticate');
-      
+      const userReq = {
+        secret: bits.toString('hex'),
+        username: user.username
+      };
+      const endpoint = state => postEndpoint(userReq, state, 'authenticate');
+
       dispatch(() => {
         return {
           [CALL_API]: {
-            types: [types.SESSION_OPEN_REQUEST, types.SESSION_OPEN_SUCCESS, types.SESSION_OPEN_FAILURE],
+            types: [
+              types.SESSION_OPEN_REQUEST,
+              types.SESSION_OPEN_SUCCESS,
+              types.SESSION_OPEN_FAILURE
+            ],
             endpoint
           }
         };
@@ -346,10 +372,12 @@ export function sessionOpenRemote(user) {
 export function sessionCloseRemote(user) {
   return {
     [CALL_API]: {
-      types: [types.SESSION_CLOSE_REQUEST, types.SESSION_CLOSE_SUCCESS, types.SESSION_CLOSE_FAILURE],
-      endpoint: (state) =>  {
-        return postEndpoint({}, state, 'logout', state.temps.user.session);
-      }
+      types: [
+        types.SESSION_CLOSE_REQUEST,
+        types.SESSION_CLOSE_SUCCESS,
+        types.SESSION_CLOSE_FAILURE
+      ],
+      endpoint: state => postEndpoint({}, state, 'logout', state.temps.user.session)
     }
   };
 }
@@ -357,13 +385,15 @@ export function sessionCloseRemote(user) {
 export function secretChangeRemote(user) {
   return (dispatch, getState) => {
     deriveBits(user.passphrase, 'sample-salt', 100000).then((bits) => {
-      let userReq = { secret: bits.toString('hex'),
-                      username: user.username,
-                      wrapped_master: user.wrappedKey
-                    };
-      let endpoint = (state) => postEndpoint(userReq, state, 'changeSecret',
-                                             state.temps.user.session);
-      
+      const userReq = {
+        secret: bits.toString('hex'),
+        username: user.username,
+        wrapped_master: user.wrappedKey
+      };
+      const endpoint = state =>
+              postEndpoint(userReq, state, 'changeSecret',
+                           state.temps.user.session);
+
       dispatch(() => {
         return {
           [CALL_API]: {
@@ -377,13 +407,14 @@ export function secretChangeRemote(user) {
 }
 
 export function cardAddRemote(user, card) {
-  let cardReq = { encrypted: card.encrypted,
-                  id: card.id
-                };
+  const cardReq = {
+    encrypted: card.encrypted,
+    id: card.id
+  };
 
-  let endpoint = (state) => putEndpoint(cardReq, state, `u/${user.user_id}/c/{card.id}`,
+  const endpoint = state => putEndpoint(cardReq, state, `u/${user.user_id}/c/{card.id}`,
                                         state.temps.user.session);
-  
+
   return {
     [CALL_API]: {
       types: [types.CARD_ADD_REQUEST, types.CARD_ADD_SUCCESS, types.CARD_ADD_FAILURE],
@@ -393,14 +424,15 @@ export function cardAddRemote(user, card) {
 }
 
 export function cardUpdateRemote(user, card) {
-  let cardReq = { encrypted: card.encrypted,
-                  id: card.id,
-                  version: card.version
-                };
+  const cardReq = {
+    encrypted: card.encrypted,
+    id: card.id,
+    version: card.version
+  };
 
-  let endpoint = (state) => postEndpoint(cardReq, state, `u/${user.user_id}/c/${card.id}`,
+  const endpoint = state => postEndpoint(cardReq, state, `u/${user.user_id}/c/${card.id}`,
                                          state.temps.user.session);
-  
+
   return {
     [CALL_API]: {
       types: [types.CARD_UPDATE_REQUEST, types.CARD_UPDATE_SUCCESS, types.CARD_UPDATE_FAILURE],
@@ -411,9 +443,9 @@ export function cardUpdateRemote(user, card) {
 
 
 export function cardDeleteRemote(user, card) {
-  let endpoint = (state) => deleteEndpoint(state, `u/${user.user_id}/c/${card.id}`,
+  const endpoint = state => deleteEndpoint(state, `u/${user.user_id}/c/${card.id}`,
                                            state.temps.user.session);
-  
+
   return {
     [CALL_API]: {
       types: [types.CARD_DELETE_REQUEST, types.CARD_DELETE_SUCCESS, types.CARD_DELETE_FAILURE],
@@ -422,10 +454,10 @@ export function cardDeleteRemote(user, card) {
   };
 }
 
-export function cardFetchRemote(user) {
-  let endpoint = (state) => getEndpoint(state, `u/${user.user_id}/c/${card.id}`,
+export function cardFetchRemote(user, card) {
+  const endpoint = state => getEndpoint(state, `u/${user.user_id}/c/${card.id}`,
                                         state.temps.user.session);
-  
+
   return {
     [CALL_API]: {
       types: [types.CARD_FETCH_REQUEST, types.CARD_FETCH_SUCCESS, types.CARD_FETCH_FAILURE],

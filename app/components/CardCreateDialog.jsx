@@ -8,7 +8,6 @@ import CardView from './CardView';
  * Floating action button connected to Dialog for creating a new card
  */
 export default class CardCreateDialog extends Component {
-
   static propTypes = {
     onSave: PropTypes.func.isRequired
   };
@@ -19,8 +18,10 @@ export default class CardCreateDialog extends Component {
   };
 
   handleOpen = () => {
-    this.setState({ open: true,
-                    card: {} });
+    this.setState({
+      open: true,
+      card: {}
+    });
   };
 
   handleClose = () => {
@@ -45,18 +46,21 @@ export default class CardCreateDialog extends Component {
     let dialog;
     if (this.state.open) {
       dialog = (
-          <CardView onSave={this.handleSubmit}
-        onCancel={this.handleClose}
-        card={{ clear: {type: 'web' } }}
-        viewMode='create' />
+        <CardView
+          onSave={this.handleSubmit}
+          onCancel={this.handleClose}
+          card={{ clear: { type: 'web' } }}
+          viewMode="create"
+        />
       );
     }
     return (
-        <div>
+      <div>
         <FloatingActionButton
-      style={ fabStyle }
-      onTouchTap={this.handleOpen.bind(this)}>
-        <ContentAdd />
+          style={fabStyle}
+          onTouchTap={this.handleOpen}
+        >
+          <ContentAdd />
         </FloatingActionButton>
         { dialog }
       </div>

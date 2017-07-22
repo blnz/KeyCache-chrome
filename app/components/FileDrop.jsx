@@ -2,57 +2,60 @@ import React, { Component, PropTypes } from 'react';
 import Dropzone from 'react-dropzone';
 import FlatButton from 'material-ui/FlatButton';
 
-export default class FileDrop extends React.Component {
-
+export default class FileDrop extends Component {
   static propTypes = {
-    onSave:  PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
     validator: PropTypes.func,
-    label:   PropTypes.string.isRequired
+    label: PropTypes.string.isRequired
   }
 
-  onDrop = (files) => {
-    console.log('Received files: ', files)
-    var isValid = false
-    if (this.props.validator) {
-      console.log("calling validator")
-      this.props.validator(files).then((contents) => {
-        console.log("got contents", contents)
-        this.setState( { fileData: files,
-                         fileObj: contents ,
-                         isValid: true } )
-      }).catch( (err) => {
-        console.log("not valid")
-      })
-    } else {
-      isValid = true;
-    }
-    this.setState( { fileData: files } )
-  }
-
-  
   state = {
     open: false,
     fileData: {}
   }
 
+  onDrop = (files) => {
+    //    console.log('Received files: ', files)
+    if (this.props.validator) {
+      //      console.log("calling validator")
+      this.props.validator(files)
+        .then((contents) => {
+          // console.log("got contents", contents)
+          this.setState({
+            fileData: files,
+            fileObj: contents,
+            isValid: true
+          });
+        })
+        .catch((err) => {
+          // console.log("not valid")
+        });
+    } else {
+      this.setState({
+        fileData: files,
+        isValid: true
+      });
+    }
+    this.setState({ fileData: files });
+  }
+
   handleOpen = () => {
-    this.setState({open: true });
+    this.setState({ open: true });
   }
 
   handleClose = () => {
-    const fileData = undefined,
-          isValid = false
-    this.setState({open: false, fileData, isValid});
+    const fileData = undefined;
+    const isValid = false;
+    this.setState({ open: false, fileData, isValid });
   }
 
   handleSubmit = () => {
-    console.log("calling onSave with", this.state.fileObj)
+    // console.log("calling onSave with", this.state.fileObj)
     this.props.onSave(this.state.fileObj);
-    this.handleClose()
+    this.handleClose();
   }
-  
-  render() {
 
+  render() {
     const dzStyle = {
       width: 300,
       height: 200,
@@ -61,36 +64,39 @@ export default class FileDrop extends React.Component {
       borderStyle: 'dashed',
       borderRadius: 5,
       backgroundColor: '#ddd'
-    }
+    };
+
     const dzActiveStyle = {
       borderStyle: 'solid',
       backgroundColor: '#eee'
-    }
+    };
+
     const dzRejectStyle = {
       borderStyle: 'solid',
       backgroundColor: '#ffdddd'
-    }
+    };
+
     const dropStyle = {
-      margin: "60px",
-      textAlign: "center",
-    }
-    
+      margin: '60px',
+      textAlign: 'center'
+    };
+
     const actions = [
-        <FlatButton
-      label="Cancel"
-      key={1}
-      primary={true}
-      onTouchTap={ this.handleClose }
-        />,
-        <FlatButton
-      label="save"
-      key={2}
-      primary={true}
-      disabled={ ! this.state.isValid }
-      onTouchTap={this.handleSubmit}
-        />,
+      <FlatButton
+        label="Cancel"
+        key={1}
+        primary
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="save"
+        key={2}
+        primary
+        disabled={!this.state.isValid}
+        onTouchTap={this.handleSubmit}
+      />,
     ];
-    
+
     if (this.state.open) {
       return (
           <div>
