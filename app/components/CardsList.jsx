@@ -1,4 +1,6 @@
 import React, { PropTypes, Component } from 'react';
+import { hashHistory } from 'react-router';
+
 import { List, ListItem } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
@@ -22,7 +24,7 @@ const searchFilter = str => card => card.clear.name.includes(str);
 
 export default class CardsList extends Component {
   static propTypes = {
-    cards: PropTypes.array.isRequired,
+    cards: PropTypes.arrayOf(PropTypes.object).isRequired,
     actions: PropTypes.object.isRequired
   };
 
@@ -34,7 +36,8 @@ export default class CardsList extends Component {
   handleCreate = card => this.props.actions.addCard(card.clear);
 
   handleCardOpen = card =>
-    this.setState({ activeCard: card, cardMode: 'view' });
+    hashHistory.push(`/card/${card.id}`);
+  //    this.setState({ activeCard: card, cardMode: 'view' });
 
   handleCardSave = (card) => {
     this.props.actions.updateCard(card);

@@ -3,13 +3,12 @@ import Dialog from 'material-ui/Dialog';
 
 import CardView from './CardView';
 
-export default class CardViewDialog extends React.Component {
+export default class CardViewDialog extends Component {
   static propTypes = {
     onSave: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
-    onEdit: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
-    card: PropTypes.object.isRequired
+    card: PropTypes.shape({ clear: PropTypes.object }).isRequired
   };
 
   state = {

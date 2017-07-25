@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Dialog from 'material-ui/Dialog';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import Card from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
@@ -32,7 +31,7 @@ export default class CardView extends React.Component {
     onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     viewMode: PropTypes.string.isRequired,
-    card: PropTypes.object.isReqired
+    card: PropTypes.shape({ clear: PropTypes.object }).isRequired
   };
 
   state = { card: { clear: {} } }
@@ -83,8 +82,6 @@ export default class CardView extends React.Component {
 
   render() {
     const disabled = this.props.viewMode === 'view';
-
-    const { clear } = this.state;
 
     const actions = this.props.viewMode !== 'view' ? [
       <FlatButton
@@ -218,14 +215,9 @@ export default class CardView extends React.Component {
     };
 
     return (
-      <Dialog
-        title={this.props.viewMode === 'create' ? 'New Card' : <ViewTitle />}
-        actions={actions}
-        modal={false}
-        open
-        onRequestClose={this.handleCancel}
-        autoScrollBodyContent
-      >
+      <div>
+        <ViewTitle />
+        <br />
         <TextField
           style={{ width: '90%' }}
           hintText="Card name"
@@ -261,7 +253,9 @@ export default class CardView extends React.Component {
           rows={3}
           rowsMax={8}
         />
-      </Dialog>
+        <br />
+        {actions}
+      </div>
     );
   }
 }

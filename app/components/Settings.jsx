@@ -1,13 +1,6 @@
 import React from 'react';
 import { Router, Route, hashHistory } from 'react-router';
 import { bindActionCreators } from 'redux';
-
-import FileDrop from './FileDrop';
-
-import * as Actions from '../actions/cards';
-
-import DownloadLink from './DownloadLink';
-
 import FlatButton from 'material-ui/FlatButton';
 
 import TextField from 'material-ui/TextField';
@@ -15,6 +8,12 @@ import Toggle from 'material-ui/Toggle';
 import Divider from 'material-ui/Divider';
 
 import { connect } from 'react-redux';
+
+import FileDrop from './FileDrop';
+
+import * as Actions from '../actions/cards';
+
+import DownloadLink from './DownloadLink';
 
 @connect(
   state => ({
@@ -27,32 +26,27 @@ import { connect } from 'react-redux';
 )
 
 export default class Settings extends React.Component {
-
-  handleWipe = event => {
-    this.props.actions.deleteAll()
-  }
-
   // ensure files is an array of length 1 and that we can parse the first as JSON
-  getJsonFile = files => {
-    var json = undefined
-    if (! files instanceof Array) {
+  getJsonFile = (files) => {
+    if (!(files instanceof Array)) {
       return false;
-    } else if (files.length != 1) {
+    } else if (files.length !== 1) {
       return false;
-    } else {
-      try {
-        console.log(files[0])
-        console.log(files[0].name)
-        console.log(files[0].value)
-        return true
-      } catch (e) {
-        return false;
-      }
-      
+    }
+    try {
+      console.log(files[0]);
+      console.log(files[0].name);
+      console.log(files[0].value);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
-  
-  validateCardsImport = files => {
+
+  handleWipe = () =>
+    this.props.actions.deleteAll();
+
+    validateCardsImport = files => {
     return new Promise( function (resolve, reject) {
       if (! files instanceof Array) {
         reject("not array");
